@@ -1,0 +1,6 @@
+description = "Implement the next Todo spec iteration automatically"
+prompt = """
+Follow the fast iteration workflow in this file:
+
+@{.agents/iterate-fast.md}
+"""

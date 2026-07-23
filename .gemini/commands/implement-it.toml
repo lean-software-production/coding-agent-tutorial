@@ -1,0 +1,6 @@
+description = "Implement every remaining Todo spec iteration"
+prompt = """
+Follow the implement-it workflow in this file:
+
+@{.agents/implement-it.md}
+"""

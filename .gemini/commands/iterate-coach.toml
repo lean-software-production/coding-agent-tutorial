@@ -1,0 +1,6 @@
+description = "Coach or help implement the next Todo spec iteration"
+prompt = """
+Follow the coach iteration workflow in this file:
+
+@{.agents/iterate-coach.md}
+"""
