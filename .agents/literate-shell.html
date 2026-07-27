@@ -82,7 +82,7 @@
 
     /* ---- the rail: one continuous line, a station per iteration ---- */
     .container {
-      max-width: 1220px;
+      max-width: 1680px;
       margin: 0 auto;
       padding: 3.5rem 2rem 1rem 4.25rem;
       position: relative;
@@ -134,7 +134,7 @@
 
     /* Explanation leads, code follows. `order` does the swap so the source
        stays in the reading order the workflow's template describes. */
-    .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .split { display: grid; grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr); }
     .explanation-panel { order: 1; }
     .code-panel { order: 2; }
     @media (max-width: 940px) {
@@ -308,7 +308,7 @@
       border-top: 1px solid var(--rule);
     }
     .demo h3 { color: var(--ink-soft); margin-bottom: 0.6rem; }
-    .demo p { max-width: 72ch; margin-bottom: 1rem; text-wrap: pretty; }
+    .demo p { margin-bottom: 1rem; text-wrap: pretty; }
     .transcript {
       background: #12171e;
       color: #d6dde6;
@@ -328,7 +328,7 @@
     .transcript .reply-line { color: #79b8f3; }
 
     footer {
-      max-width: 1220px;
+      max-width: 1680px;
       margin: 0 auto;
       padding: 2rem 2rem 4rem 4.25rem;
       font: var(--label);
