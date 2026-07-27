@@ -286,7 +286,7 @@
       border-bottom: 1px solid var(--rule);
     }
     .key-concept h3 { color: var(--accent); margin-bottom: 0.5rem; }
-    .key-concept p { margin-bottom: 0; max-width: 90ch; }
+    .key-concept p { margin-bottom: 0; }
 
     /* ---- collapsed detail ---- */
     .detail > summary {
@@ -317,13 +317,12 @@
     .detail > summary:hover { color: var(--accent); background: var(--paper); }
     .detail[open] > summary { border-bottom: 1px solid var(--rule); }
 
-    /* The handoff to the next iteration — the only amber on the page. */
+    /* The handoff to the next iteration — the only amber on the page. Closes
+       each lesson full width, mirroring the key-concept band that opens it. */
     .pressure-test {
-      margin-top: 1.4rem;
-      padding: 0.95rem 1.15rem 1rem;
+      padding: 1.15rem 1.6rem 1.3rem;
       background: var(--signal-bg);
-      border-left: 2px solid var(--signal);
-      border-radius: 0 3px 3px 0;
+      border-top: 1px solid var(--rule);
       font-size: 1rem;
     }
     .pressure-test strong {
@@ -428,9 +427,6 @@
             <p>Checked here so it fails with a readable message, rather than as a 401 from deep inside the library.</p>
           </div>
 
-          <div class="pressure-test">
-            <strong>Pressure Test:</strong> Run <code>npm start</code>, ask one question, then try to ask a follow-up. The program exits after the first answer, so there is no way to continue the conversation. This explains why the next iteration adds a prompt loop.
-          </div>
         </div>
       </div>
       <div class="demo">
@@ -444,6 +440,9 @@
 <span class="prompt-line">You: Why did the chicken cross the road?</span>
 <span class="reply-line">Assistant:</span> To get to the other side.
 <span class="shell-line">coding-agent-tutorial$</span></div>
+      </div>
+      <div class="pressure-test">
+        <strong>Pressure Test:</strong> Run <code>npm start</code>, ask one question, then try to ask a follow-up. The program exits after the first answer, so there is no way to continue the conversation. This explains why the next iteration adds a prompt loop.
       </div>
       </details>
     </section>
@@ -494,9 +493,6 @@
             <p>Unchanged from iteration 001.</p>
           </div>
 
-          <div class="pressure-test">
-            <strong>Pressure Test:</strong> Tell the agent your name, then ask what it is. It will not know. The loop works, but each turn is isolated, so nothing you said — or it said — survives into the next request. This explains why the next iteration sends the conversation history back to the model.
-          </div>
         </div>
       </div>
       <div class="demo">
@@ -513,6 +509,9 @@
 <span class="reply-line">Assistant:</span> I&#39;m sorry, but I don&#39;t have any context for your question. Without knowing what situation or previous discussion you&#39;re referring to, I can&#39;t explain why &quot;3&quot; was chosen. Could you provide more details or clarify what you&#39;re asking about?
 <span class="prompt-line">You:</span>
 <span class="shell-line">coding-agent-tutorial$</span></div>
+      </div>
+      <div class="pressure-test">
+        <strong>Pressure Test:</strong> Tell the agent your name, then ask what it is. It will not know. The loop works, but each turn is isolated, so nothing you said — or it said — survives into the next request. This explains why the next iteration sends the conversation history back to the model.
       </div>
       </details>
     </section>
@@ -563,9 +562,6 @@
             <p>Unchanged since iteration 002.</p>
           </div>
 
-          <div class="pressure-test">
-            <strong>Pressure Test:</strong> Have a longer conversation — three or four questions — then read the transcript back. It works, but replies arrive as raw markdown in a plain terminal, with nothing separating one turn from the next, and it quickly blurs together. This explains why the next iteration improves the CLI presentation.
-          </div>
         </div>
       </div>
       <div class="demo">
@@ -582,6 +578,9 @@
 <span class="reply-line">Assistant:</span> 73
 <span class="prompt-line">You:</span>
 <span class="shell-line">coding-agent-tutorial$</span></div>
+      </div>
+      <div class="pressure-test">
+        <strong>Pressure Test:</strong> Have a longer conversation — three or four questions — then read the transcript back. It works, but replies arrive as raw markdown in a plain terminal, with nothing separating one turn from the next, and it quickly blurs together. This explains why the next iteration improves the CLI presentation.
       </div>
       </details>
     </section>

@@ -286,7 +286,7 @@
       border-bottom: 1px solid var(--rule);
     }
     .key-concept h3 { color: var(--accent); margin-bottom: 0.5rem; }
-    .key-concept p { margin-bottom: 0; max-width: 90ch; }
+    .key-concept p { margin-bottom: 0; }
 
     /* ---- collapsed detail ---- */
     .detail > summary {
@@ -317,13 +317,12 @@
     .detail > summary:hover { color: var(--accent); background: var(--paper); }
     .detail[open] > summary { border-bottom: 1px solid var(--rule); }
 
-    /* The handoff to the next iteration — the only amber on the page. */
+    /* The handoff to the next iteration — the only amber on the page. Closes
+       each lesson full width, mirroring the key-concept band that opens it. */
     .pressure-test {
-      margin-top: 1.4rem;
-      padding: 0.95rem 1.15rem 1rem;
+      padding: 1.15rem 1.6rem 1.3rem;
       background: var(--signal-bg);
-      border-left: 2px solid var(--signal);
-      border-radius: 0 3px 3px 0;
+      border-top: 1px solid var(--rule);
       font-size: 1rem;
     }
     .pressure-test strong {

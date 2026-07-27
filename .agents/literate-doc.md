@@ -78,10 +78,6 @@ Model replies vary between runs. That is fine: the transcript is an example of w
             <p><strong>Line N: what it does</strong></p>
             <p>One sentence. Boilerplate only.</p>
           </div>
-
-          <div class="pressure-test">
-            <strong>Pressure Test:</strong> The spec's pressure test, and the iteration it motivates.
-          </div>
         </div>
       </div>
       <div class="demo">
@@ -89,11 +85,16 @@ Model replies vary between runs. That is fine: the transcript is an example of w
         <p>One sentence naming the new capability this iteration unlocked.</p>
         <div class="transcript">CAPTURED OUTPUT</div>
       </div>
+      <div class="pressure-test">
+        <strong>Pressure Test:</strong> The spec's pressure test, and the iteration it motivates.
+      </div>
       </details>
     </section>
 ```
 
-The number, title and key concept stay outside the `<details>` so the page can be read as a list of lessons with everything collapsed. The code, the explanation and the demo all live inside it. Sections ship closed; do not add an `open` attribute.
+The number, title and key concept stay outside the `<details>` so the page can be read as a list of lessons with everything collapsed. The code, the explanation, the demo and the pressure test all live inside it. Sections ship closed; do not add an `open` attribute.
+
+The pressure test comes last, after the demo, and runs the full width — the reader should see what the agent can now do before reading what it still cannot.
 
 For iteration 001 there is no previous iteration: use `<h3>Breaking Down the Code</h3>` instead of `<h3>What Changed from Iteration NNN-1</h3>` and walk through the whole listing.
 
