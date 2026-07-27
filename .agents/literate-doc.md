@@ -56,16 +56,17 @@ Model replies vary between runs. That is fine: the transcript is an example of w
         <span class="iteration-number">NNN</span>
         <span class="iteration-title">Title from the ledger</span>
       </div>
+      <div class="key-concept">
+        <h3>Key Concept</h3>
+        <p>The spec's key concept, in plain language.</p>
+      </div>
+      <details class="detail">
+        <summary>Code and demo</summary>
       <div class="split">
         <div class="code-panel">
           <div class="code-block">CODE LINES</div>
         </div>
         <div class="explanation-panel">
-          <div class="key-concept">
-            <h3>Key Concept</h3>
-            <p>The spec's key concept, in plain language.</p>
-          </div>
-
           <h3>What Changed from Iteration NNN-1</h3>
           <div class="note g1">
             <p><strong>Lines N–M: what they do</strong></p>
@@ -88,8 +89,11 @@ Model replies vary between runs. That is fine: the transcript is an example of w
         <p>One sentence naming the new capability this iteration unlocked.</p>
         <div class="transcript">CAPTURED OUTPUT</div>
       </div>
+      </details>
     </section>
 ```
+
+The number, title and key concept stay outside the `<details>` so the page can be read as a list of lessons with everything collapsed. The code, the explanation and the demo all live inside it. Sections ship closed; do not add an `open` attribute.
 
 For iteration 001 there is no previous iteration: use `<h3>Breaking Down the Code</h3>` instead of `<h3>What Changed from Iteration NNN-1</h3>` and walk through the whole listing.
 

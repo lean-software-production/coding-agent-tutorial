@@ -278,14 +278,44 @@
       word-break: break-word;
     }
 
+    /* The lesson itself: full width under the title, always visible, so the
+       page can be read as a list of ideas without opening anything. */
     .key-concept {
       background: var(--accent-bg);
-      padding: 1rem 1.15rem 1.05rem;
-      border-radius: 3px;
-      margin-bottom: 1.4rem;
+      padding: 1.15rem 1.6rem 1.3rem;
+      border-bottom: 1px solid var(--rule);
     }
     .key-concept h3 { color: var(--accent); margin-bottom: 0.5rem; }
-    .key-concept p { margin-bottom: 0; }
+    .key-concept p { margin-bottom: 0; max-width: 90ch; }
+
+    /* ---- collapsed detail ---- */
+    .detail > summary {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.9rem 1.6rem;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+      font: var(--label);
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .detail > summary::-webkit-details-marker { display: none; }
+    .detail > summary::before {
+      content: "";
+      width: 0;
+      height: 0;
+      border-left: 5px solid currentColor;
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      transition: transform 0.15s ease;
+    }
+    .detail[open] > summary::before { transform: rotate(90deg); }
+    .detail > summary:hover { color: var(--accent); background: var(--paper); }
+    .detail[open] > summary { border-bottom: 1px solid var(--rule); }
 
     /* The handoff to the next iteration — the only amber on the page. */
     .pressure-test {
@@ -380,6 +410,7 @@
         if (stacked.matches) return;
 
         var frame = split.getBoundingClientRect();
+        if (!frame.width || !frame.height) return;   // collapsed section
         layer.setAttribute("viewBox", "0 0 " + frame.width + " " + frame.height);
         layer.setAttribute("width", frame.width);
         layer.setAttribute("height", frame.height);
@@ -465,6 +496,10 @@
           highlight(split, groupOf(event.target));
         });
         split.addEventListener("mouseleave", function () { highlight(split, null); });
+      });
+
+      document.querySelectorAll(".detail").forEach(function (detail) {
+        detail.addEventListener("toggle", draw);
       });
 
       draw();
