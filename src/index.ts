@@ -13,12 +13,19 @@ const client = new OpenAI({
 });
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-const prompt = await rl.question("You: ");
-rl.close();
 
-const response = await client.chat.completions.create({
-  model: process.env.OPENCODE_MODEL ?? "deepseek-v4-flash",
-  messages: [{ role: "user", content: prompt }],
+rl.on("SIGINT", () => {
+  console.log();
+  process.exit(0);
 });
 
-console.log("Assistant:", response.choices[0].message.content);
+while (true) {
+  const prompt = await rl.question("You: ");
+
+  const response = await client.chat.completions.create({
+    model: process.env.OPENCODE_MODEL ?? "deepseek-v4-flash",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  console.log("Assistant:", response.choices[0].message.content);
+}
