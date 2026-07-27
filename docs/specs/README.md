@@ -2,7 +2,7 @@
 
 | Iteration | Spec | Status |
 |---|---|---|
-| 001 | [Single turn](001-single-turn.md) | Todo |
+| 001 | [Single turn](001-single-turn.md) | Done |
 | 002 | [Stateless agent loop](002-stateless-agent-loop.md) | Todo |
 | 003 | [Stateful agent loop](003-stateful-agent-loop.md) | Todo |
 | 004 | [Better CLI UX](004-better-cli-ux.md) | Todo |
