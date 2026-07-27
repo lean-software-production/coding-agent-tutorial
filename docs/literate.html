@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coding Agent Tutorial — Literate Walkthrough</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #fafafa;
+    }
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    header p { opacity: 0.9; font-size: 1.1rem; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    .iteration {
+      margin-bottom: 3rem;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .iteration-header {
+      background: #333;
+      color: white;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .iteration-number {
+      background: #667eea;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .iteration-title { font-size: 1.25rem; font-weight: 600; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 900px) {
+      .split { grid-template-columns: 1fr; }
+    }
+    .code-panel {
+      background: #f5f5f5;
+      color: #333;
+      padding: 1.5rem;
+      font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+    .explanation-panel { background: white; padding: 1.5rem; }
+    .code-block {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+      font-size: 0;
+    }
+    .code-line { display: block; font-size: 0.9rem; }
+    .code-line:hover { background: rgba(0,0,0,0.05); }
+    .line-num {
+      display: inline-block;
+      width: 2.5em;
+      text-align: right;
+      padding-right: 1em;
+      color: #999;
+      user-select: none;
+      opacity: 0.7;
+    }
+    .keyword { color: #0000ff; }
+    .string { color: #a31515; }
+    .comment { color: #008000; }
+    .function { color: #795e26; }
+    .variable { color: #001080; }
+    .operator { color: #333; }
+    .number { color: #098658; }
+    .explanation-panel h3 { color: #667eea; margin-bottom: 1rem; font-size: 1.1rem; }
+    .explanation-panel p { margin-bottom: 1rem; }
+    .explanation-panel ul { margin-left: 1.5rem; margin-bottom: 1rem; }
+    .explanation-panel li { margin-bottom: 0.5rem; }
+    .key-concept {
+      background: linear-gradient(135deg, #667eea20, #764ba220);
+      border-left: 4px solid #667eea;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    .pressure-test {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    .pressure-test strong { color: #856404; }
+    .demo { border-top: 1px solid #e5e5e5; padding: 1.5rem; background: white; }
+    .demo h3 { color: #667eea; margin-bottom: 0.75rem; font-size: 1.1rem; }
+    .demo p { margin-bottom: 1rem; }
+    .transcript {
+      background: #1e1e1e;
+      color: #e6e6e6;
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-x: auto;
+    }
+    .transcript .prompt-line { color: #7ee787; }
+    .transcript .reply-line { color: #79c0ff; }
+    footer { text-align: center; padding: 2rem; color: #666; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Coding Agent Tutorial</h1>
+    <p>A literate walkthrough — building a coding agent one iteration at a time</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Iteration 001 -->
+    <section class="iteration">
+      <div class="iteration-header">
+        <span class="iteration-number">001</span>
+        <span class="iteration-title">Single turn</span>
+      </div>
+      <div class="split">
+        <div class="code-panel">
+          <div class="code-block"><span class="code-line"><span class="line-num">1</span><span class="keyword">import</span> <span class="variable">OpenAI</span> <span class="keyword">from</span> <span class="string">"openai"</span>;</span><span class="code-line"><span class="line-num">2</span><span class="keyword">import</span> <span class="operator">*</span> <span class="keyword">as</span> <span class="variable">readline</span> <span class="keyword">from</span> <span class="string">"node:readline/promises"</span>;</span><span class="code-line"><span class="line-num">3</span></span><span class="code-line"><span class="line-num">4</span><span class="keyword">const</span> <span class="variable">apiKey</span> <span class="operator">=</span> <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_API_KEY</span>;</span><span class="code-line"><span class="line-num">5</span><span class="keyword">if</span> (<span class="operator">!</span><span class="variable">apiKey</span>) {</span><span class="code-line"><span class="line-num">6</span>  <span class="variable">console</span>.<span class="function">error</span>(<span class="string">"OPENCODE_API_KEY is not set. See the README for how to get one."</span>);</span><span class="code-line"><span class="line-num">7</span>  <span class="variable">process</span>.<span class="function">exit</span>(<span class="number">1</span>);</span><span class="code-line"><span class="line-num">8</span>}</span><span class="code-line"><span class="line-num">9</span></span><span class="code-line"><span class="line-num">10</span><span class="keyword">const</span> <span class="variable">client</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="function">OpenAI</span>({</span><span class="code-line"><span class="line-num">11</span>  <span class="variable">apiKey</span>,</span><span class="code-line"><span class="line-num">12</span>  <span class="variable">baseURL</span>: <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_BASE_URL</span> <span class="operator">??</span> <span class="string">"https://opencode.ai/zen/v1"</span>,</span><span class="code-line"><span class="line-num">13</span>});</span><span class="code-line"><span class="line-num">14</span></span><span class="code-line"><span class="line-num">15</span><span class="keyword">const</span> <span class="variable">rl</span> <span class="operator">=</span> <span class="variable">readline</span>.<span class="function">createInterface</span>({ <span class="variable">input</span>: <span class="variable">process</span>.<span class="variable">stdin</span>, <span class="variable">output</span>: <span class="variable">process</span>.<span class="variable">stdout</span> });</span><span class="code-line"><span class="line-num">16</span><span class="keyword">const</span> <span class="variable">prompt</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="variable">rl</span>.<span class="function">question</span>(<span class="string">"You: "</span>);</span><span class="code-line"><span class="line-num">17</span><span class="variable">rl</span>.<span class="function">close</span>();</span><span class="code-line"><span class="line-num">18</span></span><span class="code-line"><span class="line-num">19</span><span class="keyword">const</span> <span class="variable">response</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="variable">client</span>.<span class="variable">chat</span>.<span class="variable">completions</span>.<span class="function">create</span>({</span><span class="code-line"><span class="line-num">20</span>  <span class="variable">model</span>: <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_MODEL</span> <span class="operator">??</span> <span class="string">"deepseek-v4-flash"</span>,</span><span class="code-line"><span class="line-num">21</span>  <span class="variable">messages</span>: [{ <span class="variable">role</span>: <span class="string">"user"</span>, <span class="variable">content</span>: <span class="variable">prompt</span> }],</span><span class="code-line"><span class="line-num">22</span>});</span><span class="code-line"><span class="line-num">23</span></span><span class="code-line"><span class="line-num">24</span><span class="variable">console</span>.<span class="function">log</span>(<span class="string">"Assistant:"</span>, <span class="variable">response</span>.<span class="variable">choices</span>[<span class="number">0</span>].<span class="variable">message</span>.<span class="variable">content</span>);</span></div>
+        </div>
+        <div class="explanation-panel">
+          <div class="key-concept">
+            <h3>Key Concept</h3>
+            <p>At its core, a single agent turn is just an API request to the model provider. You provide a prompt, and it provides a response.</p>
+          </div>
+
+          <h3>Breaking Down the Code</h3>
+
+          <p><strong>Lines 4–8: fail fast on a missing key</strong></p>
+          <p>Without this guard, a missing key surfaces as a confusing 401 from deep inside the OpenAI library. Failing here names the actual cause. Pulling the key into a variable also narrows its type: after the guard, TypeScript knows <code>apiKey</code> is a <code>string</code>, not <code>string | undefined</code>.</p>
+
+          <p><strong>Lines 10–13: an OpenAI client pointed somewhere else</strong></p>
+          <p>OpenCode Zen speaks the OpenAI wire protocol, so the standard <code>openai</code> package works unchanged — only <code>baseURL</code> moves. <code>??</code> supplies the default only when the variable is unset, which is what lets you swap models and endpoints without touching code.</p>
+
+          <p><strong>Lines 15–17: one line of input</strong></p>
+          <p><code>readline/promises</code> lets us <code>await</code> the user's answer instead of nesting callbacks. <code>rl.close()</code> is what allows the program to exit at all — readline holds stdin open until released. We close it immediately, because this iteration only ever reads one line.</p>
+
+          <p><strong>Lines 19–22: the turn itself</strong></p>
+          <p>This is the whole agent. Note that <code>messages</code> is a <em>list</em>: the API keeps no memory of its own, so every turn resends the entire conversation. That single fact is what the next two iterations are built on.</p>
+
+          <p><strong>Line 24: print the reply</strong></p>
+          <p>The response arrives wrapped in <code>choices</code> — a provider could return several candidate completions. We take the first and print its text.</p>
+
+          <div class="pressure-test">
+            <strong>Pressure Test:</strong> Run <code>npm start</code>, ask one question, then try to ask a follow-up. The program exits after the first answer, so there is no way to continue the conversation. This explains why the next iteration adds a prompt loop.
+          </div>
+        </div>
+      </div>
+      <div class="demo">
+        <h3>What the agent can do now</h3>
+        <p>It can answer one question you type, using a real language model — a complete agent turn, start to finish.</p>
+        <div class="transcript"><span class="prompt-line">You: What is the capital of France?</span>
+<span class="reply-line">Assistant:</span> The capital of France is Paris.</div>
+      </div>
+    </section>
+
+    <!-- ITERATIONS -->
+  </div>
+
+  <footer>
+    <p><!-- FOOTER -->Documented through iteration 001 — Single turn.</p>
+  </footer>
+</body>
+</html>
