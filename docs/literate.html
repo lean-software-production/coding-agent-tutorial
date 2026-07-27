@@ -585,11 +585,101 @@
       </details>
     </section>
 
+    <!-- Iteration 004 -->
+    <section class="iteration">
+      <div class="iteration-header">
+        <span class="iteration-number">004</span>
+        <span class="iteration-title">Better CLI UX</span>
+      </div>
+      <div class="key-concept">
+        <h3>Key Concept</h3>
+        <p>We are in control of the experience. We can shape the terminal UI we want from our coding agent without changing the underlying agent behavior.</p>
+      </div>
+      <details class="detail">
+        <summary>Code and demo</summary>
+      <div class="split">
+        <div class="code-panel">
+          <div class="code-block"><span class="code-line"><span class="line-num">1</span><span class="keyword">import</span> <span class="variable">OpenAI</span> <span class="keyword">from</span> <span class="string">&quot;openai&quot;</span>;</span><span class="code-line"><span class="line-num">2</span><span class="keyword">import</span> <span class="operator">*</span> <span class="keyword">as</span> <span class="variable">readline</span> <span class="keyword">from</span> <span class="string">&quot;node:readline/promises&quot;</span>;</span><span class="code-line g4"><span class="line-num">3</span><span class="keyword">import</span> { <span class="variable">marked</span> } <span class="keyword">from</span> <span class="string">&quot;marked&quot;</span>;</span><span class="code-line g4"><span class="line-num">4</span><span class="keyword">import</span> { <span class="variable">markedTerminal</span> } <span class="keyword">from</span> <span class="string">&quot;marked-terminal&quot;</span>;</span><span class="code-line g4"><span class="line-num">5</span><span class="keyword">import</span> <span class="variable">chalk</span> <span class="keyword">from</span> <span class="string">&quot;chalk&quot;</span>;</span><span class="code-line"><span class="line-num">6</span></span><span class="code-line g2"><span class="line-num">7</span><span class="variable">marked</span>.<span class="function">use</span>(<span class="function">markedTerminal</span>());</span><span class="code-line"><span class="line-num">8</span></span><span class="code-line"><span class="line-num">9</span><span class="keyword">const</span> <span class="variable">apiKey</span> <span class="operator">=</span> <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_API_KEY</span>;</span><span class="code-line"><span class="line-num">10</span><span class="keyword">if</span> (<span class="operator">!</span><span class="variable">apiKey</span>) {</span><span class="code-line"><span class="line-num">11</span>  <span class="variable">console</span>.<span class="function">error</span>(<span class="string">&quot;OPENCODE_API_KEY is not set. See the README for how to get one.&quot;</span>);</span><span class="code-line"><span class="line-num">12</span>  <span class="variable">process</span>.<span class="function">exit</span>(<span class="number">1</span>);</span><span class="code-line"><span class="line-num">13</span>}</span><span class="code-line"><span class="line-num">14</span></span><span class="code-line"><span class="line-num">15</span><span class="keyword">const</span> <span class="variable">client</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="function">OpenAI</span>({</span><span class="code-line"><span class="line-num">16</span>  <span class="variable">apiKey</span>,</span><span class="code-line"><span class="line-num">17</span>  <span class="variable">baseURL</span>: <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_BASE_URL</span> <span class="operator">??</span> <span class="string">&quot;https://opencode.ai/zen/v1&quot;</span>,</span><span class="code-line"><span class="line-num">18</span>});</span><span class="code-line"><span class="line-num">19</span></span><span class="code-line"><span class="line-num">20</span><span class="keyword">const</span> <span class="variable">rl</span> <span class="operator">=</span> <span class="variable">readline</span>.<span class="function">createInterface</span>({ <span class="variable">input</span>: <span class="variable">process</span>.<span class="variable">stdin</span>, <span class="variable">output</span>: <span class="variable">process</span>.<span class="variable">stdout</span> });</span><span class="code-line"><span class="line-num">21</span></span><span class="code-line"><span class="line-num">22</span><span class="variable">rl</span>.<span class="function">on</span>(<span class="string">&quot;SIGINT&quot;</span>, () <span class="operator">=&gt;</span> {</span><span class="code-line"><span class="line-num">23</span>  <span class="variable">console</span>.<span class="function">log</span>();</span><span class="code-line"><span class="line-num">24</span>  <span class="variable">process</span>.<span class="function">exit</span>(<span class="number">0</span>);</span><span class="code-line"><span class="line-num">25</span>});</span><span class="code-line"><span class="line-num">26</span></span><span class="code-line"><span class="line-num">27</span><span class="keyword">const</span> <span class="variable">messages</span>: <span class="variable">OpenAI</span>.<span class="variable">ChatCompletionMessageParam</span>[] <span class="operator">=</span> [];</span><span class="code-line"><span class="line-num">28</span></span><span class="code-line"><span class="line-num">29</span><span class="keyword">while</span> (<span class="keyword">true</span>) {</span><span class="code-line g3"><span class="line-num">30</span>  <span class="keyword">const</span> <span class="variable">prompt</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="variable">rl</span>.<span class="function">question</span>(<span class="variable">chalk</span>.<span class="function">green</span>(<span class="string">&quot;You: &quot;</span>));</span><span class="code-line"><span class="line-num">31</span>  <span class="variable">messages</span>.<span class="function">push</span>({ <span class="variable">role</span>: <span class="string">&quot;user&quot;</span>, <span class="variable">content</span>: <span class="variable">prompt</span> });</span><span class="code-line"><span class="line-num">32</span></span><span class="code-line"><span class="line-num">33</span>  <span class="keyword">const</span> <span class="variable">response</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="variable">client</span>.<span class="variable">chat</span>.<span class="variable">completions</span>.<span class="function">create</span>({</span><span class="code-line"><span class="line-num">34</span>    <span class="variable">model</span>: <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_MODEL</span> <span class="operator">??</span> <span class="string">&quot;deepseek-v4-flash&quot;</span>,</span><span class="code-line"><span class="line-num">35</span>    <span class="variable">messages</span>,</span><span class="code-line"><span class="line-num">36</span>  });</span><span class="code-line"><span class="line-num">37</span></span><span class="code-line"><span class="line-num">38</span>  <span class="keyword">const</span> <span class="variable">reply</span> <span class="operator">=</span> <span class="variable">response</span>.<span class="variable">choices</span>[<span class="number">0</span>].<span class="variable">message</span>;</span><span class="code-line"><span class="line-num">39</span>  <span class="variable">messages</span>.<span class="function">push</span>(<span class="variable">reply</span>);</span><span class="code-line"><span class="line-num">40</span></span><span class="code-line g1"><span class="line-num">41</span>  <span class="variable">console</span>.<span class="function">log</span>(<span class="variable">chalk</span>.<span class="function">blue</span>(<span class="string">&quot;Assistant:&quot;</span>));</span><span class="code-line g1"><span class="line-num">42</span>  <span class="variable">console</span>.<span class="function">log</span>(<span class="keyword">await</span> <span class="variable">marked</span>.<span class="function">parse</span>(<span class="variable">reply</span>.<span class="variable">content</span> <span class="operator">??</span> <span class="string">&quot;&quot;</span>));</span><span class="code-line g1"><span class="line-num">43</span>  <span class="variable">console</span>.<span class="function">log</span>(<span class="variable">chalk</span>.<span class="function">dim</span>(<span class="string">&quot;─&quot;</span>.<span class="function">repeat</span>(<span class="number">40</span>)));</span><span class="code-line"><span class="line-num">44</span>}</span></div>
+        </div>
+        <div class="explanation-panel">
+          <h3>What Changed from Iteration 003</h3>
+
+          <div class="note g1">
+            <p><strong>Lines 41–43: printing a reply</strong></p>
+            <p>Three lines replace one. The label moves onto its own line because rendered Markdown is a block — a list cannot begin halfway along <code>Assistant:</code>. The rule is dimmed on purpose: it should organise the scrollback, not compete with it. <code>?? ""</code> is there because <code>content</code> is nullable — a model can return no text when it calls a tool instead, which is exactly what iteration 005 introduces.</p>
+          </div>
+
+          <div class="note g2">
+            <p><strong>Line 7: teach marked about terminals</strong></p>
+            <p>Registered once at startup, not per turn — it is configuration, not work. From here on <code>marked.parse</code> emits ANSI escapes instead of HTML.</p>
+          </div>
+
+          <div class="note g3">
+            <p><strong>Line 30: a coloured prompt</strong></p>
+            <p>Only the label is tinted, never what either side says; the reply already carries its own colour from the Markdown renderer. Chalk emits nothing when output is not a terminal, so piping to a file stays clean without a single <code>if</code>.</p>
+          </div>
+
+          <h3>Setup</h3>
+
+          <div class="note g4">
+            <p><strong>Lines 3–5: three new dependencies</strong></p>
+            <p>All three ship with the project. <code>marked-terminal</code> needs a five-line <code>declare module</code> in <code>src/marked-terminal.d.ts</code>: it publishes no types of its own, and the community ones are a major version behind.</p>
+          </div>
+
+          <p>Nothing else moved. Apart from one blank line, the coloured runs are the whole of this iteration's diff — the agent's behaviour is untouched, which is the point of the iteration.</p>
+        </div>
+      </div>
+      <div class="demo">
+        <h3>What the agent can do now</h3>
+        <p>The same conversation as iteration 002, where the reply arrived as a wall of raw <code>**asterisks**</code>. Nothing about the agent changed — only how the reply reaches the screen.</p>
+        <div class="transcript"><span class="shell-line">coding-agent-tutorial$ npm start</span>
+
+<span class="shell-line">&gt; coding-agent-workshop@0.1.0 start
+&gt; tsx src/index.ts</span>
+
+<span class="prompt-line">You: How many R&#x27;s in STRAWBERRY</span>
+<span class="reply-line">Assistant:</span>
+The word &quot;STRAWBERRY&quot; contains three R&#x27;s: one in &quot;STRAW&quot; and two in &quot;BERRY&quot;.
+
+Answer: 3
+
+
+────────────────────────────────────────
+<span class="prompt-line">You: Can you explain why you said 3</span>
+<span class="reply-line">Assistant:</span>
+Certainly! Let&#x27;s break down the word STRAWBERRY letter by letter:
+
+S T R A W B E R R Y
+1 2 3 4 5 6 7 8 9 10
+
+As you can see:
+
+    * The 3rd letter is R (in &quot;STRAW&quot;).
+    * The 8th letter is R (first R in &quot;BERRY&quot;).
+    * The 9th letter is R (second R in &quot;BERRY&quot;).
+
+So there are three R&#x27;s in total.
+
+Sometimes people mistakenly think &quot;berry&quot; has only one R, but the correct spelling of &quot;berry&quot; is b-e-r-r-y — two R&#x27;s. Combined with the R in &quot;straw,&quot; that gives three.
+
+I hope that clears it up!
+
+
+────────────────────────────────────────
+<span class="prompt-line">You:</span>
+<span class="shell-line">coding-agent-tutorial$</span></div>
+      </div>
+      <div class="pressure-test">
+        <strong>Pressure Test:</strong> Ask it to summarise <code>README.md</code>. The UI is nicer, but the agent cannot inspect project files, so it can only guess or ask you to paste the contents. This explains why the next iteration adds a file-reading tool.
+      </div>
+      </details>
+    </section>
+
     <!-- ITERATIONS -->
   </div>
 
   <footer>
-    <p><!-- FOOTER -->Documented through iteration 003 — Stateful agent loop.</p>
+    <p><!-- FOOTER -->Documented through iteration 004 — Better CLI UX.</p>
   </footer>
 
   <script>
