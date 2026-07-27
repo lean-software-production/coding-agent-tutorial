@@ -416,11 +416,78 @@
       </div>
     </section>
 
+    <!-- Iteration 002 -->
+    <section class="iteration">
+      <div class="iteration-header">
+        <span class="iteration-number">002</span>
+        <span class="iteration-title">Stateless agent loop</span>
+      </div>
+      <div class="split">
+        <div class="code-panel">
+          <div class="code-block"><span class="code-line"><span class="line-num">1</span><span class="keyword">import</span> <span class="variable">OpenAI</span> <span class="keyword">from</span> <span class="string">&quot;openai&quot;</span>;</span><span class="code-line"><span class="line-num">2</span><span class="keyword">import</span> <span class="operator">*</span> <span class="keyword">as</span> <span class="variable">readline</span> <span class="keyword">from</span> <span class="string">&quot;node:readline/promises&quot;</span>;</span><span class="code-line"><span class="line-num">3</span></span><span class="code-line g5"><span class="line-num">4</span><span class="keyword">const</span> <span class="variable">apiKey</span> <span class="operator">=</span> <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_API_KEY</span>;</span><span class="code-line g5"><span class="line-num">5</span><span class="keyword">if</span> (<span class="operator">!</span><span class="variable">apiKey</span>) {</span><span class="code-line g5"><span class="line-num">6</span>  <span class="variable">console</span>.<span class="function">error</span>(<span class="string">&quot;OPENCODE_API_KEY is not set. See the README for how to get one.&quot;</span>);</span><span class="code-line g5"><span class="line-num">7</span>  <span class="variable">process</span>.<span class="function">exit</span>(<span class="number">1</span>);</span><span class="code-line g5"><span class="line-num">8</span>}</span><span class="code-line"><span class="line-num">9</span></span><span class="code-line g4"><span class="line-num">10</span><span class="keyword">const</span> <span class="variable">client</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="function">OpenAI</span>({</span><span class="code-line g4"><span class="line-num">11</span>  <span class="variable">apiKey</span>,</span><span class="code-line g4"><span class="line-num">12</span>  <span class="variable">baseURL</span>: <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_BASE_URL</span> <span class="operator">??</span> <span class="string">&quot;https://opencode.ai/zen/v1&quot;</span>,</span><span class="code-line g4"><span class="line-num">13</span>});</span><span class="code-line g4"><span class="line-num">14</span></span><span class="code-line g4"><span class="line-num">15</span><span class="keyword">const</span> <span class="variable">rl</span> <span class="operator">=</span> <span class="variable">readline</span>.<span class="function">createInterface</span>({ <span class="variable">input</span>: <span class="variable">process</span>.<span class="variable">stdin</span>, <span class="variable">output</span>: <span class="variable">process</span>.<span class="variable">stdout</span> });</span><span class="code-line"><span class="line-num">16</span></span><span class="code-line g3"><span class="line-num">17</span><span class="variable">rl</span>.<span class="function">on</span>(<span class="string">&quot;SIGINT&quot;</span>, () <span class="operator">=&gt;</span> {</span><span class="code-line g3"><span class="line-num">18</span>  <span class="variable">console</span>.<span class="function">log</span>();</span><span class="code-line g3"><span class="line-num">19</span>  <span class="variable">process</span>.<span class="function">exit</span>(<span class="number">0</span>);</span><span class="code-line g3"><span class="line-num">20</span>});</span><span class="code-line"><span class="line-num">21</span></span><span class="code-line g1"><span class="line-num">22</span><span class="keyword">while</span> (<span class="keyword">true</span>) {</span><span class="code-line g1"><span class="line-num">23</span>  <span class="keyword">const</span> <span class="variable">prompt</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="variable">rl</span>.<span class="function">question</span>(<span class="string">&quot;You: &quot;</span>);</span><span class="code-line"><span class="line-num">24</span></span><span class="code-line g2"><span class="line-num">25</span>  <span class="keyword">const</span> <span class="variable">response</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="variable">client</span>.<span class="variable">chat</span>.<span class="variable">completions</span>.<span class="function">create</span>({</span><span class="code-line g2"><span class="line-num">26</span>    <span class="variable">model</span>: <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_MODEL</span> <span class="operator">??</span> <span class="string">&quot;deepseek-v4-flash&quot;</span>,</span><span class="code-line g2"><span class="line-num">27</span>    <span class="variable">messages</span>: [{ <span class="variable">role</span>: <span class="string">&quot;user&quot;</span>, <span class="variable">content</span>: <span class="variable">prompt</span> }],</span><span class="code-line g2"><span class="line-num">28</span>  });</span><span class="code-line"><span class="line-num">29</span></span><span class="code-line"><span class="line-num">30</span>  <span class="variable">console</span>.<span class="function">log</span>(<span class="string">&quot;Assistant:&quot;</span>, <span class="variable">response</span>.<span class="variable">choices</span>[<span class="number">0</span>].<span class="variable">message</span>.<span class="variable">content</span>);</span><span class="code-line g1"><span class="line-num">31</span>}</span></div>
+        </div>
+        <div class="explanation-panel">
+          <div class="key-concept">
+            <h3>Key Concept</h3>
+            <p>The feeling of an interactive agent chat comes from a loop, but without memory of the conversation, the agent is not very helpful.</p>
+          </div>
+
+          <h3>What Changed from Iteration 001</h3>
+
+          <div class="note g1">
+            <p><strong>Lines 22–23, 31: the loop</strong></p>
+            <p>Everything the previous iteration did once now happens over and over. <code>rl.close()</code> is gone from just after the question, because closing the reader is what ended the program after a single turn. The loop has no exit condition, which is honest: the spec says the only way out is Ctrl-C, and a <code>while (running)</code> flag would imply a door that does not exist.</p>
+          </div>
+
+          <div class="note g2">
+            <p><strong>Lines 25–28: still one prompt at a time</strong></p>
+            <p>The request is rebuilt from scratch on every pass, and line 27 fills <code>messages</code> with only the prompt just typed. Nothing from earlier turns is sent. This is deliberate — it is the "stateless" in the iteration's name, and it is what the pressure test exposes.</p>
+          </div>
+
+          <div class="note g3">
+            <p><strong>Lines 17–20: leaving cleanly</strong></p>
+            <p>Node's readline throws <code>AbortError</code> on Ctrl-C only when nothing is listening for <code>SIGINT</code>. Registering a listener does not catch that error; it takes the branch where no error is raised at all. <code>process.exit(0)</code> then gives the zero exit code the spec asks for.</p>
+          </div>
+
+          <h3>Setup</h3>
+
+          <div class="note g4">
+            <p><strong>Lines 10–15: the client and the reader</strong></p>
+            <p>Unchanged from iteration 001, except that <code>rl</code> is now created once and outlives every turn.</p>
+          </div>
+
+          <div class="note g5">
+            <p><strong>Lines 4–8: a missing key</strong></p>
+            <p>Unchanged from iteration 001.</p>
+          </div>
+
+          <div class="pressure-test">
+            <strong>Pressure Test:</strong> Tell the agent your name, then ask what it is. It will not know. The loop works, but each turn is isolated, so nothing you said — or it said — survives into the next request. This explains why the next iteration sends the conversation history back to the model.
+          </div>
+        </div>
+      </div>
+      <div class="demo">
+        <h3>What the agent can do now</h3>
+        <p>It holds a session open and answers question after question — and in the same breath shows the limit, forgetting an answer it gave one turn earlier.</p>
+        <div class="transcript"><span class="shell-line">coding-agent-tutorial$ npm start</span>
+
+<span class="shell-line">&gt; coding-agent-workshop@0.1.0 start
+&gt; tsx src/index.ts</span>
+
+<span class="prompt-line">You: How many r&#39;s in STRAWBERRY</span>
+<span class="reply-line">Assistant:</span> The word &quot;STRAWBERRY&quot; contains three &#39;r&#39;s.
+<span class="prompt-line">You: Can you show me why you chose 3?</span>
+<span class="reply-line">Assistant:</span> I&#39;m sorry, but I don&#39;t have any context for your question. Without knowing what situation or previous discussion you&#39;re referring to, I can&#39;t explain why &quot;3&quot; was chosen. Could you provide more details or clarify what you&#39;re asking about?
+<span class="prompt-line">You:</span>
+<span class="shell-line">coding-agent-tutorial$</span></div>
+      </div>
+    </section>
+
     <!-- ITERATIONS -->
   </div>
 
   <footer>
-    <p><!-- FOOTER -->Documented through iteration 001 — Single turn.</p>
+    <p><!-- FOOTER -->Documented through iteration 002 — Stateless agent loop.</p>
   </footer>
 
   <script>
