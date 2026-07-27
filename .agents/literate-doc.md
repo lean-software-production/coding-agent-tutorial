@@ -67,12 +67,16 @@ Model replies vary between runs. That is fine: the transcript is an example of w
           </div>
 
           <h3>What Changed from Iteration NNN-1</h3>
-          <p><strong>Line N: what it does</strong></p>
-          <p>Why it matters.</p>
+          <div class="note g1">
+            <p><strong>Lines N–M: what they do</strong></p>
+            <p>Why it matters.</p>
+          </div>
 
           <h3>Setup</h3>
-          <p><strong>Line N: what it does</strong></p>
-          <p>One sentence. Boilerplate only.</p>
+          <div class="note g4">
+            <p><strong>Line N: what it does</strong></p>
+            <p>One sentence. Boilerplate only.</p>
+          </div>
 
           <div class="pressure-test">
             <strong>Pressure Test:</strong> The spec's pressure test, and the iteration it motivates.
@@ -89,6 +93,8 @@ Model replies vary between runs. That is fine: the transcript is an example of w
 
 For iteration 001 there is no previous iteration: use `<h3>Breaking Down the Code</h3>` instead of `<h3>What Changed from Iteration NNN-1</h3>` and walk through the whole listing.
 
+Keep the source order shown above, with `code-panel` first. The shell's stylesheet puts the explanation on the left and the code on the right; swapping the markup would only undo that.
+
 ## Rendering the code listing
 
 Every line of `src/index.ts` becomes one `<span class="code-line">`, starting with its line number:
@@ -98,9 +104,24 @@ Every line of `src/index.ts` becomes one `<span class="code-line">`, starting wi
 ```
 
 - Include a `code-line` span for blank lines too, so the numbering stays true to the file.
+- Colour-code each explained run of lines. Give every line in the run a group class — `g1` through `g5` — alongside `code-line`, and put the same class on the `<div class="note">` that explains it. The code gets a margin rule, the note gets a matching bounding box:
+
+  ```html
+  <span class="code-line g1"><span class="line-num">19</span>…</span>
+  ...
+  <div class="note g1">
+    <p><strong>Lines 19–22: the turn itself</strong></p>
+    <p>Why it matters.</p>
+  </div>
+  ```
+
+  Assign `g1` onward in the order the explanation presents the runs, so the iteration's lesson always gets `g1`. Leave blank separator lines between runs untagged. A section may explain at most five runs; if you need more, the explanation is too granular. Never invent a sixth group class or add colours of your own.
+- A run's group class must cover exactly the lines its note names. If the note says `Lines 19–22`, lines 19, 20, 21 and 22 carry that class and no others do. A mismatch tells the reader to look in the wrong place.
 - Escape `<`, `>`, and `&` as `&lt;`, `&gt;`, and `&amp;`.
 - Highlight with the shell's classes: `keyword`, `string`, `comment`, `function`, `variable`, `operator`, `number`.
 - Do not reformat, shorten, or elide the source. The listing must match the file exactly.
+
+## Rendering the transcript
 
 Show the whole terminal exchange, starting at the shell prompt that launched it and ending at the shell prompt it returns to, so the reader can see where the program begins and ends. Wrap the lines with the shell's transcript classes:
 
@@ -121,3 +142,4 @@ Escape `>` in banner lines as `&gt;`.
 - Do not edit `src/index.ts`, the specs, or the ledger. This workflow only writes `docs/literate.html`.
 - Do not solve a pressure test. It is the hook for the next iteration.
 - Keep all styling in the shell's `<style>` block. Do not add inline styles or new CSS per section.
+- The shell's closing `<script>` draws the curves joining each note to its run of code. It finds them by group class alone, so a correctly tagged section needs nothing else. Leave it in place and do not add scripts of your own.

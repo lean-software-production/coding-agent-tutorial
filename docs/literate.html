@@ -24,6 +24,16 @@
       --serif: ui-serif, Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
 
       --label: 0.7rem/1 var(--mono);
+
+      /* Line-group colours, linking a run of code to the note explaining it.
+         They are only ever drawn as rules and edges, never as fills behind
+         text, so they can stay saturated and easy to tell apart. Amber is
+         deliberately absent: it means "pressure test". */
+      --g1: #0f766e;
+      --g2: #1d4ed8;
+      --g3: #7c3aed;
+      --g4: #475569;
+      --g5: #15803d;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -122,7 +132,11 @@
       letter-spacing: -0.01em;
     }
 
+    /* Explanation leads, code follows. `order` does the swap so the source
+       stays in the reading order the workflow's template describes. */
     .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .explanation-panel { order: 1; }
+    .code-panel { order: 2; }
     @media (max-width: 940px) {
       .split { grid-template-columns: minmax(0, 1fr); }
     }
@@ -130,11 +144,11 @@
     /* ---- code ---- */
     .code-panel {
       padding: 1.6rem 1.5rem;
-      border-right: 1px solid var(--rule);
+      border-left: 1px solid var(--rule);
       overflow-x: auto;
     }
     @media (max-width: 940px) {
-      .code-panel { border-right: 0; border-bottom: 1px solid var(--rule); }
+      .code-panel { border-left: 0; border-top: 1px solid var(--rule); }
     }
     /* font-size:0 collapses the whitespace between code-line spans, so the
        listing needs no source-level minification to render exactly. */
@@ -144,13 +158,16 @@
       white-space: pre-wrap;
       word-break: break-word;
     }
+    /* Every line reserves the margin rule, so tagged and untagged lines keep
+       the same indent and the numbers stay in one column. */
     .code-line {
       display: block;
       font-size: 0.845rem;
       line-height: 1.62;
-      border-radius: 2px;
+      border-left: 3px solid transparent;
+      padding-left: 0.6rem;
     }
-    .code-line:hover { background: var(--accent-bg); }
+    .code-line:hover { background: var(--paper); }
     .line-num {
       display: inline-block;
       width: 2.5em;
@@ -168,6 +185,71 @@
     .operator { color: #6b7480; }
     .number   { color: #0b5ea8; }
 
+    /* ---- line groups: a margin rule in the code, a bounding box on the note ---- */
+    .code-line.g1 { border-left-color: var(--g1); }
+    .code-line.g2 { border-left-color: var(--g2); }
+    .code-line.g3 { border-left-color: var(--g3); }
+    .code-line.g4 { border-left-color: var(--g4); }
+    .code-line.g5 { border-left-color: var(--g5); }
+
+    .note {
+      border: 1px solid var(--rule-firm);
+      border-left-width: 3px;
+      border-radius: 0 4px 4px 0;
+      padding: 0.85rem 1.05rem 0.9rem;
+      margin-bottom: 1rem;
+      background: var(--card);
+    }
+    .note > p { margin-bottom: 0.5rem; }
+    .note > p:last-child { margin-bottom: 0; }
+    .note strong {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ink-soft);
+    }
+    .note.g1 { border-color: var(--g1); }
+    .note.g2 { border-color: var(--g2); }
+    .note.g3 { border-color: var(--g3); }
+    .note.g4 { border-color: var(--g4); }
+    .note.g5 { border-color: var(--g5); }
+    .note.g1 strong { color: var(--g1); }
+    .note.g2 strong { color: var(--g2); }
+    .note.g3 strong { color: var(--g3); }
+    .note.g4 strong { color: var(--g4); }
+    .note.g5 strong { color: var(--g5); }
+
+    /* Curves joining each note to the run of code it explains. Drawn by the
+       script at the end of the document, which measures where both actually
+       land; without it the notes and margin rules still stand on their own. */
+    .split { position: relative; }
+    .joins {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 1;
+    }
+    /* Joins rest dimmed so five curves read as texture rather than clutter;
+       hovering a note or its code brings that one up and pushes the rest back. */
+    .joins .join {
+      opacity: 0.3;
+      transition: opacity 0.15s ease, stroke-width 0.15s ease;
+    }
+    .joins.has-active .join { opacity: 0.08; }
+    .joins .join.is-active { opacity: 1; stroke-width: 1.75; }
+    .joins .cap { transition: opacity 0.15s ease; }
+
+    /* outline, not border, so nothing reflows when a note lights up */
+    .split[data-active] .note[class*="g"] { outline-offset: -1px; }
+    .split[data-active="g1"] .note.g1 { outline: 1px solid var(--g1); }
+    .split[data-active="g2"] .note.g2 { outline: 1px solid var(--g2); }
+    .split[data-active="g3"] .note.g3 { outline: 1px solid var(--g3); }
+    .split[data-active="g4"] .note.g4 { outline: 1px solid var(--g4); }
+    .split[data-active="g5"] .note.g5 { outline: 1px solid var(--g5); }
+    @media (max-width: 940px) { .joins { display: none; } }
+
     /* ---- explanation ---- */
     .explanation-panel { padding: 1.6rem 1.75rem; }
     .explanation-panel > h3 {
@@ -181,16 +263,8 @@
       border-bottom: 1px solid var(--rule);
     }
     .explanation-panel > h3:not(:first-child) { margin-top: 1.75rem; }
-    .explanation-panel p { margin-bottom: 0.95rem; text-wrap: pretty; }
-    .explanation-panel p:last-child { margin-bottom: 0; }
-    /* a line-reference lead-in, e.g. "Lines 4-8: fail fast" */
-    .explanation-panel p > strong:first-child {
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      color: var(--accent);
-    }
+    .explanation-panel p { text-wrap: pretty; }
+    .explanation-panel > p { margin-bottom: 0.95rem; }
     .explanation-panel ul { margin: 0 0 0.95rem 1.35rem; }
     .explanation-panel li { margin-bottom: 0.4rem; }
 
@@ -286,7 +360,7 @@
       </div>
       <div class="split">
         <div class="code-panel">
-          <div class="code-block"><span class="code-line"><span class="line-num">1</span><span class="keyword">import</span> <span class="variable">OpenAI</span> <span class="keyword">from</span> <span class="string">"openai"</span>;</span><span class="code-line"><span class="line-num">2</span><span class="keyword">import</span> <span class="operator">*</span> <span class="keyword">as</span> <span class="variable">readline</span> <span class="keyword">from</span> <span class="string">"node:readline/promises"</span>;</span><span class="code-line"><span class="line-num">3</span></span><span class="code-line"><span class="line-num">4</span><span class="keyword">const</span> <span class="variable">apiKey</span> <span class="operator">=</span> <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_API_KEY</span>;</span><span class="code-line"><span class="line-num">5</span><span class="keyword">if</span> (<span class="operator">!</span><span class="variable">apiKey</span>) {</span><span class="code-line"><span class="line-num">6</span>  <span class="variable">console</span>.<span class="function">error</span>(<span class="string">"OPENCODE_API_KEY is not set. See the README for how to get one."</span>);</span><span class="code-line"><span class="line-num">7</span>  <span class="variable">process</span>.<span class="function">exit</span>(<span class="number">1</span>);</span><span class="code-line"><span class="line-num">8</span>}</span><span class="code-line"><span class="line-num">9</span></span><span class="code-line"><span class="line-num">10</span><span class="keyword">const</span> <span class="variable">client</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="function">OpenAI</span>({</span><span class="code-line"><span class="line-num">11</span>  <span class="variable">apiKey</span>,</span><span class="code-line"><span class="line-num">12</span>  <span class="variable">baseURL</span>: <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_BASE_URL</span> <span class="operator">??</span> <span class="string">"https://opencode.ai/zen/v1"</span>,</span><span class="code-line"><span class="line-num">13</span>});</span><span class="code-line"><span class="line-num">14</span></span><span class="code-line"><span class="line-num">15</span><span class="keyword">const</span> <span class="variable">rl</span> <span class="operator">=</span> <span class="variable">readline</span>.<span class="function">createInterface</span>({ <span class="variable">input</span>: <span class="variable">process</span>.<span class="variable">stdin</span>, <span class="variable">output</span>: <span class="variable">process</span>.<span class="variable">stdout</span> });</span><span class="code-line"><span class="line-num">16</span><span class="keyword">const</span> <span class="variable">prompt</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="variable">rl</span>.<span class="function">question</span>(<span class="string">"You: "</span>);</span><span class="code-line"><span class="line-num">17</span><span class="variable">rl</span>.<span class="function">close</span>();</span><span class="code-line"><span class="line-num">18</span></span><span class="code-line"><span class="line-num">19</span><span class="keyword">const</span> <span class="variable">response</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="variable">client</span>.<span class="variable">chat</span>.<span class="variable">completions</span>.<span class="function">create</span>({</span><span class="code-line"><span class="line-num">20</span>  <span class="variable">model</span>: <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_MODEL</span> <span class="operator">??</span> <span class="string">"deepseek-v4-flash"</span>,</span><span class="code-line"><span class="line-num">21</span>  <span class="variable">messages</span>: [{ <span class="variable">role</span>: <span class="string">"user"</span>, <span class="variable">content</span>: <span class="variable">prompt</span> }],</span><span class="code-line"><span class="line-num">22</span>});</span><span class="code-line"><span class="line-num">23</span></span><span class="code-line"><span class="line-num">24</span><span class="variable">console</span>.<span class="function">log</span>(<span class="string">"Assistant:"</span>, <span class="variable">response</span>.<span class="variable">choices</span>[<span class="number">0</span>].<span class="variable">message</span>.<span class="variable">content</span>);</span></div>
+          <div class="code-block"><span class="code-line"><span class="line-num">1</span><span class="keyword">import</span> <span class="variable">OpenAI</span> <span class="keyword">from</span> <span class="string">"openai"</span>;</span><span class="code-line"><span class="line-num">2</span><span class="keyword">import</span> <span class="operator">*</span> <span class="keyword">as</span> <span class="variable">readline</span> <span class="keyword">from</span> <span class="string">"node:readline/promises"</span>;</span><span class="code-line"><span class="line-num">3</span></span><span class="code-line g5"><span class="line-num">4</span><span class="keyword">const</span> <span class="variable">apiKey</span> <span class="operator">=</span> <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_API_KEY</span>;</span><span class="code-line g5"><span class="line-num">5</span><span class="keyword">if</span> (<span class="operator">!</span><span class="variable">apiKey</span>) {</span><span class="code-line g5"><span class="line-num">6</span>  <span class="variable">console</span>.<span class="function">error</span>(<span class="string">"OPENCODE_API_KEY is not set. See the README for how to get one."</span>);</span><span class="code-line g5"><span class="line-num">7</span>  <span class="variable">process</span>.<span class="function">exit</span>(<span class="number">1</span>);</span><span class="code-line g5"><span class="line-num">8</span>}</span><span class="code-line"><span class="line-num">9</span></span><span class="code-line g4"><span class="line-num">10</span><span class="keyword">const</span> <span class="variable">client</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="function">OpenAI</span>({</span><span class="code-line g4"><span class="line-num">11</span>  <span class="variable">apiKey</span>,</span><span class="code-line g4"><span class="line-num">12</span>  <span class="variable">baseURL</span>: <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_BASE_URL</span> <span class="operator">??</span> <span class="string">"https://opencode.ai/zen/v1"</span>,</span><span class="code-line g4"><span class="line-num">13</span>});</span><span class="code-line"><span class="line-num">14</span></span><span class="code-line g3"><span class="line-num">15</span><span class="keyword">const</span> <span class="variable">rl</span> <span class="operator">=</span> <span class="variable">readline</span>.<span class="function">createInterface</span>({ <span class="variable">input</span>: <span class="variable">process</span>.<span class="variable">stdin</span>, <span class="variable">output</span>: <span class="variable">process</span>.<span class="variable">stdout</span> });</span><span class="code-line g3"><span class="line-num">16</span><span class="keyword">const</span> <span class="variable">prompt</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="variable">rl</span>.<span class="function">question</span>(<span class="string">"You: "</span>);</span><span class="code-line g3"><span class="line-num">17</span><span class="variable">rl</span>.<span class="function">close</span>();</span><span class="code-line"><span class="line-num">18</span></span><span class="code-line g1"><span class="line-num">19</span><span class="keyword">const</span> <span class="variable">response</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="variable">client</span>.<span class="variable">chat</span>.<span class="variable">completions</span>.<span class="function">create</span>({</span><span class="code-line g1"><span class="line-num">20</span>  <span class="variable">model</span>: <span class="variable">process</span>.<span class="variable">env</span>.<span class="variable">OPENCODE_MODEL</span> <span class="operator">??</span> <span class="string">"deepseek-v4-flash"</span>,</span><span class="code-line g1"><span class="line-num">21</span>  <span class="variable">messages</span>: [{ <span class="variable">role</span>: <span class="string">"user"</span>, <span class="variable">content</span>: <span class="variable">prompt</span> }],</span><span class="code-line g1"><span class="line-num">22</span>});</span><span class="code-line"><span class="line-num">23</span></span><span class="code-line g2"><span class="line-num">24</span><span class="variable">console</span>.<span class="function">log</span>(<span class="string">"Assistant:"</span>, <span class="variable">response</span>.<span class="variable">choices</span>[<span class="number">0</span>].<span class="variable">message</span>.<span class="variable">content</span>);</span></div>
         </div>
         <div class="explanation-panel">
           <div class="key-concept">
@@ -296,22 +370,32 @@
 
           <h3>Breaking Down the Code</h3>
 
-          <p><strong>Lines 19–22: the turn itself</strong></p>
-          <p>This is the whole agent — one request, one response. Note that <code>messages</code> is a <em>list</em>: the API keeps no memory of its own, so every turn must resend the entire conversation. That single fact is what the next two iterations are built on.</p>
+          <div class="note g1">
+            <p><strong>Lines 19–22: the turn itself</strong></p>
+            <p>This is the whole agent — one request, one response. Note that <code>messages</code> is a <em>list</em>: the API keeps no memory of its own, so every turn must resend the entire conversation. That single fact is what the next two iterations are built on.</p>
+          </div>
 
-          <p><strong>Line 24: reading the reply</strong></p>
-          <p>Replies arrive wrapped in <code>choices</code>, because a provider may return several candidate completions. We take the first and print its text.</p>
+          <div class="note g2">
+            <p><strong>Line 24: reading the reply</strong></p>
+            <p>Replies arrive wrapped in <code>choices</code>, because a provider may return several candidate completions. We take the first and print its text.</p>
+          </div>
 
-          <p><strong>Lines 15–17: one line of input</strong></p>
-          <p><code>readline/promises</code> lets us <code>await</code> the user's answer instead of nesting callbacks. <code>rl.close()</code> is what allows the program to exit at all — readline holds stdin open until released, and this iteration only ever reads one line.</p>
+          <div class="note g3">
+            <p><strong>Lines 15–17: one line of input</strong></p>
+            <p><code>readline/promises</code> lets us <code>await</code> the user's answer instead of nesting callbacks. <code>rl.close()</code> is what allows the program to exit at all — readline holds stdin open until released, and this iteration only ever reads one line.</p>
+          </div>
 
           <h3>Setup</h3>
 
-          <p><strong>Lines 10–13: pointing the client elsewhere</strong></p>
-          <p>OpenCode Zen speaks the OpenAI wire protocol, so the standard <code>openai</code> package works unchanged — only <code>baseURL</code> moves. <code>??</code> fills in a default when the variable is unset.</p>
+          <div class="note g4">
+            <p><strong>Lines 10–13: pointing the client elsewhere</strong></p>
+            <p>OpenCode Zen speaks the OpenAI wire protocol, so the standard <code>openai</code> package works unchanged — only <code>baseURL</code> moves. <code>??</code> fills in a default when the variable is unset.</p>
+          </div>
 
-          <p><strong>Lines 4–8: a missing key</strong></p>
-          <p>Checked here so it fails with a readable message, rather than as a 401 from deep inside the library.</p>
+          <div class="note g5">
+            <p><strong>Lines 4–8: a missing key</strong></p>
+            <p>Checked here so it fails with a readable message, rather than as a 401 from deep inside the library.</p>
+          </div>
 
           <div class="pressure-test">
             <strong>Pressure Test:</strong> Run <code>npm start</code>, ask one question, then try to ask a follow-up. The program exits after the first answer, so there is no way to continue the conversation. This explains why the next iteration adds a prompt loop.
@@ -338,5 +422,123 @@
   <footer>
     <p><!-- FOOTER -->Documented through iteration 001 — Single turn.</p>
   </footer>
+
+  <script>
+    // Draw a curve from each note's right edge to the margin rule of the code
+    // run it explains. Positions are measured, not assumed, so the joins stay
+    // correct at any width; the layer is decorative and re-drawn on resize.
+    (function () {
+      var SVG = "http://www.w3.org/2000/svg";
+      var GROUPS = ["g1", "g2", "g3", "g4", "g5"];
+      var stacked = window.matchMedia("(max-width: 940px)");
+
+      function drawSplit(split) {
+        var layer = split.querySelector(".joins");
+        if (!layer) {
+          layer = document.createElementNS(SVG, "svg");
+          layer.setAttribute("class", "joins");
+          layer.setAttribute("aria-hidden", "true");
+          split.appendChild(layer);
+        }
+        while (layer.firstChild) layer.removeChild(layer.firstChild);
+        if (stacked.matches) return;
+
+        var frame = split.getBoundingClientRect();
+        layer.setAttribute("viewBox", "0 0 " + frame.width + " " + frame.height);
+        layer.setAttribute("width", frame.width);
+        layer.setAttribute("height", frame.height);
+
+        var styles = getComputedStyle(document.documentElement);
+        GROUPS.forEach(function (group) {
+          var note = split.querySelector(".note." + group);
+          var lines = split.querySelectorAll(".code-line." + group);
+          if (!note || !lines.length) return;
+
+          var n = note.getBoundingClientRect();
+          var first = lines[0].getBoundingClientRect();
+          var last = lines[lines.length - 1].getBoundingClientRect();
+
+          var x1 = n.right - frame.left;
+          var y1 = n.top + n.height / 2 - frame.top;
+          var x2 = first.left - frame.left;
+          var y2 = (first.top + last.bottom) / 2 - frame.top;
+          var waist = x1 + (x2 - x1) / 2;
+
+          var ink = styles.getPropertyValue("--" + group).trim();
+
+          var path = document.createElementNS(SVG, "path");
+          path.setAttribute("class", "join " + group);
+          path.setAttribute("d",
+            "M " + x1 + " " + y1 +
+            " C " + waist + " " + y1 + ", " + waist + " " + y2 + ", " + x2 + " " + y2);
+          path.setAttribute("fill", "none");
+          path.setAttribute("stroke", ink);
+          path.setAttribute("stroke-width", "1");
+          layer.appendChild(path);
+
+          var cap = document.createElementNS(SVG, "circle");
+          cap.setAttribute("class", "join cap " + group);
+          cap.setAttribute("cx", x1);
+          cap.setAttribute("cy", y1);
+          cap.setAttribute("r", "2.5");
+          cap.setAttribute("fill", ink);
+          layer.appendChild(cap);
+        });
+
+        // a redraw rebuilds the paths, so restore whatever was lit
+        var active = split.getAttribute("data-active");
+        if (active) highlight(split, active);
+      }
+
+      // ResizeObserver can fire as a result of our own drawing; coalesce to
+      // one pass per frame so it cannot chase its own tail.
+      var pending = false;
+      function draw() {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(function () {
+          pending = false;
+          document.querySelectorAll(".split").forEach(drawSplit);
+        });
+      }
+
+      // Hover a note or any line of its run to bring that join forward.
+      // Delegated, so it keeps working after every redraw.
+      function highlight(split, group) {
+        var layer = split.querySelector(".joins");
+        if (!layer) return;
+        layer.classList.toggle("has-active", !!group);
+        layer.querySelectorAll(".join").forEach(function (el) {
+          el.classList.toggle("is-active", !!group && el.classList.contains(group));
+        });
+        if (group) split.setAttribute("data-active", group);
+        else split.removeAttribute("data-active");
+      }
+
+      function groupOf(node) {
+        var owner = node && node.closest && node.closest(".note, .code-line");
+        if (!owner) return null;
+        for (var i = 0; i < GROUPS.length; i++) {
+          if (owner.classList.contains(GROUPS[i])) return GROUPS[i];
+        }
+        return null;
+      }
+
+      document.querySelectorAll(".split").forEach(function (split) {
+        split.addEventListener("mouseover", function (event) {
+          highlight(split, groupOf(event.target));
+        });
+        split.addEventListener("mouseleave", function () { highlight(split, null); });
+      });
+
+      draw();
+      window.addEventListener("resize", draw);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+      if (window.ResizeObserver) {
+        var observer = new ResizeObserver(draw);
+        document.querySelectorAll(".split").forEach(function (s) { observer.observe(s); });
+      }
+    })();
+  </script>
 </body>
 </html>
