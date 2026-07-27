@@ -19,13 +19,19 @@ rl.on("SIGINT", () => {
   process.exit(0);
 });
 
+const messages: OpenAI.ChatCompletionMessageParam[] = [];
+
 while (true) {
   const prompt = await rl.question("You: ");
+  messages.push({ role: "user", content: prompt });
 
   const response = await client.chat.completions.create({
     model: process.env.OPENCODE_MODEL ?? "deepseek-v4-flash",
-    messages: [{ role: "user", content: prompt }],
+    messages,
   });
 
-  console.log("Assistant:", response.choices[0].message.content);
+  const reply = response.choices[0].message;
+  messages.push(reply);
+
+  console.log("Assistant:", reply.content);
 }
