@@ -70,6 +70,10 @@ Model replies vary between runs. That is fine: the transcript is an example of w
           <p><strong>Line N: what it does</strong></p>
           <p>Why it matters.</p>
 
+          <h3>Setup</h3>
+          <p><strong>Line N: what it does</strong></p>
+          <p>One sentence. Boilerplate only.</p>
+
           <div class="pressure-test">
             <strong>Pressure Test:</strong> The spec's pressure test, and the iteration it motivates.
           </div>
@@ -98,11 +102,19 @@ Every line of `src/index.ts` becomes one `<span class="code-line">`, starting wi
 - Highlight with the shell's classes: `keyword`, `string`, `comment`, `function`, `variable`, `operator`, `number`.
 - Do not reformat, shorten, or elide the source. The listing must match the file exactly.
 
-In the transcript, wrap the user's lines in `<span class="prompt-line">` and the agent's label lines in `<span class="reply-line">`.
+Show the whole terminal exchange, starting at the shell prompt that launched it and ending at the shell prompt it returns to, so the reader can see where the program begins and ends. Wrap the lines with the shell's transcript classes:
+
+- `<span class="shell-line">` — terminal chrome: shell prompts and tool banners such as npm's. Dimmed, because it frames the run rather than being part of it.
+- `<span class="prompt-line">` — lines the user typed.
+- `<span class="reply-line">` — the agent's label lines.
+
+Escape `>` in banner lines as `&gt;`.
 
 ## Rules
 
 - Line numbers in the prose must match the line numbers in the listing beside it.
+- Order the explanation by what it teaches, not by where it sits in the file. Lead with the lines that carry the iteration's lesson, and let the reader meet the idea first.
+- Demote boilerplate — client construction, environment defaults, key checks — to a short `<h3>Setup</h3>` block at the end, one sentence each. It has to be present to run, but it is not what the reader came for. Drop the block entirely when there is nothing to demote.
 - Explain why a change was made, not just what changed. The reader wants the reasoning.
 - Keep each explanation short enough to read beside the code without scrolling past it.
 - Do not document iterations that are `Todo` or `WIP`.

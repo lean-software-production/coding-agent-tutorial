@@ -5,118 +5,269 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coding Agent Tutorial — Literate Walkthrough</title>
   <style>
+    :root {
+      color-scheme: light;
+
+      --paper:      #f6f7f9;
+      --card:       #ffffff;
+      --ink:        #11161d;
+      --ink-soft:   #55606d;
+      --ink-faint:  #8b95a1;
+      --rule:       #e0e5ec;
+      --rule-firm:  #c9d1da;
+      --accent:     #0f6e66;
+      --accent-bg:  #eef5f4;
+      --signal:     #9a5416;
+      --signal-bg:  #fbf3e9;
+
+      --mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+      --serif: ui-serif, Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+
+      --label: 0.7rem/1 var(--mono);
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      line-height: 1.6;
-      color: #1a1a1a;
-      background: #fafafa;
+      font-family: var(--serif);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      color: var(--ink);
+      background: var(--paper);
+      -webkit-font-smoothing: antialiased;
     }
-    header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 2rem;
-      text-align: center;
-    }
-    header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-    header p { opacity: 0.9; font-size: 1.1rem; }
-    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
-    .iteration {
-      margin-bottom: 3rem;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-    .iteration-header {
-      background: #333;
-      color: white;
-      padding: 1rem 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
+
+    /* Shared eyebrow treatment: mono, tracked out, small. Used for every
+       machine-facing label so prose and apparatus never look alike. */
+    .key-concept h3,
+    .demo h3,
+    .pressure-test strong,
     .iteration-number {
-      background: #667eea;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
+      font: var(--label);
       font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
     }
-    .iteration-title { font-size: 1.25rem; font-weight: 600; }
-    .split { display: grid; grid-template-columns: 1fr 1fr; }
-    @media (max-width: 900px) {
-      .split { grid-template-columns: 1fr; }
+
+    /* ---- masthead ---- */
+    header {
+      padding: 5rem 2rem 2.75rem;
+      border-bottom: 1px solid var(--rule-firm);
+      background: var(--card);
     }
+    header > * { max-width: 66ch; margin: 0 auto; }
+    header h1 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 600;
+      letter-spacing: -0.018em;
+      line-height: 1.12;
+      margin-bottom: 0.85rem;
+    }
+    header p {
+      font-size: 1.15rem;
+      color: var(--ink-soft);
+      text-wrap: pretty;
+    }
+
+    /* ---- the rail: one continuous line, a station per iteration ---- */
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 3.5rem 2rem 1rem 4.25rem;
+      position: relative;
+    }
+    .container::before {
+      content: "";
+      position: absolute;
+      left: 1.85rem;
+      top: 5.3rem;
+      bottom: 4rem;
+      width: 1px;
+      background: var(--rule-firm);
+    }
+
+    .iteration {
+      position: relative;
+      margin-bottom: 3.5rem;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+    }
+    /* station dot, punched out of the rail */
+    .iteration::before {
+      content: "";
+      position: absolute;
+      left: -2.68rem;
+      top: 1.55rem;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px var(--paper);
+    }
+
+    .iteration-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.9rem;
+      padding: 1.15rem 1.6rem 1.05rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .iteration-number { color: var(--accent); }
+    .iteration-title {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    @media (max-width: 940px) {
+      .split { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    /* ---- code ---- */
     .code-panel {
-      background: #f5f5f5;
-      color: #333;
-      padding: 1.5rem;
-      font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
-      font-size: 0.9rem;
+      padding: 1.6rem 1.5rem;
+      border-right: 1px solid var(--rule);
       overflow-x: auto;
     }
-    .explanation-panel { background: white; padding: 1.5rem; }
+    @media (max-width: 940px) {
+      .code-panel { border-right: 0; border-bottom: 1px solid var(--rule); }
+    }
+    /* font-size:0 collapses the whitespace between code-line spans, so the
+       listing needs no source-level minification to render exactly. */
     .code-block {
+      font-family: var(--mono);
+      font-size: 0;
       white-space: pre-wrap;
       word-break: break-word;
-      line-height: 1.5;
-      font-size: 0;
     }
-    .code-line { display: block; font-size: 0.9rem; }
-    .code-line:hover { background: rgba(0,0,0,0.05); }
+    .code-line {
+      display: block;
+      font-size: 0.845rem;
+      line-height: 1.62;
+      border-radius: 2px;
+    }
+    .code-line:hover { background: var(--accent-bg); }
     .line-num {
       display: inline-block;
       width: 2.5em;
-      text-align: right;
       padding-right: 1em;
-      color: #999;
+      text-align: right;
+      color: var(--ink-faint);
       user-select: none;
-      opacity: 0.7;
     }
-    .keyword { color: #0000ff; }
-    .string { color: #a31515; }
-    .comment { color: #008000; }
-    .function { color: #795e26; }
-    .variable { color: #001080; }
-    .operator { color: #333; }
-    .number { color: #098658; }
-    .explanation-panel h3 { color: #667eea; margin-bottom: 1rem; font-size: 1.1rem; }
-    .explanation-panel p { margin-bottom: 1rem; }
-    .explanation-panel ul { margin-left: 1.5rem; margin-bottom: 1rem; }
-    .explanation-panel li { margin-bottom: 0.5rem; }
-    .key-concept {
-      background: linear-gradient(135deg, #667eea20, #764ba220);
-      border-left: 4px solid #667eea;
-      padding: 1rem;
+
+    .keyword  { color: #0b5ea8; }
+    .string   { color: #1a7f5a; }
+    .comment  { color: var(--ink-faint); font-style: italic; }
+    .function { color: #7b3fa0; }
+    .variable { color: #232b34; }
+    .operator { color: #6b7480; }
+    .number   { color: #0b5ea8; }
+
+    /* ---- explanation ---- */
+    .explanation-panel { padding: 1.6rem 1.75rem; }
+    .explanation-panel > h3 {
+      font-family: var(--serif);
+      font-size: 1.0625rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
       margin-bottom: 1rem;
-      border-radius: 0 8px 8px 0;
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid var(--rule);
     }
+    .explanation-panel > h3:not(:first-child) { margin-top: 1.75rem; }
+    .explanation-panel p { margin-bottom: 0.95rem; text-wrap: pretty; }
+    .explanation-panel p:last-child { margin-bottom: 0; }
+    /* a line-reference lead-in, e.g. "Lines 4-8: fail fast" */
+    .explanation-panel p > strong:first-child {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--accent);
+    }
+    .explanation-panel ul { margin: 0 0 0.95rem 1.35rem; }
+    .explanation-panel li { margin-bottom: 0.4rem; }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.845em;
+      padding: 0.1em 0.36em;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      word-break: break-word;
+    }
+
+    .key-concept {
+      background: var(--accent-bg);
+      padding: 1rem 1.15rem 1.05rem;
+      border-radius: 3px;
+      margin-bottom: 1.4rem;
+    }
+    .key-concept h3 { color: var(--accent); margin-bottom: 0.5rem; }
+    .key-concept p { margin-bottom: 0; }
+
+    /* The handoff to the next iteration — the only amber on the page. */
     .pressure-test {
-      background: #fff3cd;
-      border-left: 4px solid #ffc107;
-      padding: 1rem;
-      margin-top: 1rem;
-      border-radius: 0 8px 8px 0;
+      margin-top: 1.4rem;
+      padding: 0.95rem 1.15rem 1rem;
+      background: var(--signal-bg);
+      border-left: 2px solid var(--signal);
+      border-radius: 0 3px 3px 0;
+      font-size: 1rem;
     }
-    .pressure-test strong { color: #856404; }
-    .demo { border-top: 1px solid #e5e5e5; padding: 1.5rem; background: white; }
-    .demo h3 { color: #667eea; margin-bottom: 0.75rem; font-size: 1.1rem; }
-    .demo p { margin-bottom: 1rem; }
+    .pressure-test strong {
+      display: block;
+      color: var(--signal);
+      margin-bottom: 0.35rem;
+    }
+
+    /* ---- demo ---- */
+    .demo {
+      padding: 1.5rem 1.75rem 1.75rem;
+      border-top: 1px solid var(--rule);
+    }
+    .demo h3 { color: var(--ink-soft); margin-bottom: 0.6rem; }
+    .demo p { max-width: 72ch; margin-bottom: 1rem; text-wrap: pretty; }
     .transcript {
-      background: #1e1e1e;
-      color: #e6e6e6;
-      padding: 1rem 1.25rem;
-      border-radius: 8px;
-      font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
-      font-size: 0.85rem;
-      line-height: 1.5;
+      background: #12171e;
+      color: #d6dde6;
+      padding: 1.1rem 1.3rem;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.65;
       white-space: pre-wrap;
       word-break: break-word;
       overflow-x: auto;
     }
-    .transcript .prompt-line { color: #7ee787; }
-    .transcript .reply-line { color: #79c0ff; }
-    footer { text-align: center; padding: 2rem; color: #666; font-size: 0.9rem; }
+    /* terminal chrome — shell prompts and tool banners, dimmed so the eye
+       lands on the conversation itself */
+    .transcript .shell-line { color: #6d7885; }
+    .transcript .prompt-line { color: #7fd6a6; }
+    .transcript .reply-line { color: #79b8f3; }
+
+    footer {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 2rem 2rem 4rem 4.25rem;
+      font: var(--label);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
   </style>
 </head>
 <body>
