@@ -25,3 +25,7 @@ Follow Kent Beck's rules of simple design, in order:
 - When the user says "coach me", asks to "iterate coach", or wants to be coached through the next Todo spec iteration, read and follow `.agents/iterate-coach.md`.
   - Preflight: before coaching, check whether `OPENCODE_API_KEY` is set in the environment (e.g. `echo "${OPENCODE_API_KEY:-not set}"`). If it is not set, point the user to the "Don't have an API key yet?" section of `README.md` for how to register for one, and ask them to set it before continuing.
 - When the user asks only to "iterate" and does not specify fast, coach, or implement-it, ask which workflow they want.
+
+## Documentation workflows
+
+- When the user asks to update the literate document, the walkthrough, or `docs/literate.html`, read and follow `.agents/literate-doc.md`.

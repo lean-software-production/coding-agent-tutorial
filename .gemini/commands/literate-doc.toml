@@ -1,0 +1,6 @@
+description = "Update the literate walkthrough at docs/literate.html"
+prompt = """
+Follow the literate document workflow in this file:
+
+@{.agents/literate-doc.md}
+"""

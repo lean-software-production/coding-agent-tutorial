@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coding Agent Tutorial — Literate Walkthrough</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #fafafa;
+    }
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    header p { opacity: 0.9; font-size: 1.1rem; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    .iteration {
+      margin-bottom: 3rem;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .iteration-header {
+      background: #333;
+      color: white;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .iteration-number {
+      background: #667eea;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .iteration-title { font-size: 1.25rem; font-weight: 600; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 900px) {
+      .split { grid-template-columns: 1fr; }
+    }
+    .code-panel {
+      background: #f5f5f5;
+      color: #333;
+      padding: 1.5rem;
+      font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+    .explanation-panel { background: white; padding: 1.5rem; }
+    .code-block {
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+      font-size: 0;
+    }
+    .code-line { display: block; font-size: 0.9rem; }
+    .code-line:hover { background: rgba(0,0,0,0.05); }
+    .line-num {
+      display: inline-block;
+      width: 2.5em;
+      text-align: right;
+      padding-right: 1em;
+      color: #999;
+      user-select: none;
+      opacity: 0.7;
+    }
+    .keyword { color: #0000ff; }
+    .string { color: #a31515; }
+    .comment { color: #008000; }
+    .function { color: #795e26; }
+    .variable { color: #001080; }
+    .operator { color: #333; }
+    .number { color: #098658; }
+    .explanation-panel h3 { color: #667eea; margin-bottom: 1rem; font-size: 1.1rem; }
+    .explanation-panel p { margin-bottom: 1rem; }
+    .explanation-panel ul { margin-left: 1.5rem; margin-bottom: 1rem; }
+    .explanation-panel li { margin-bottom: 0.5rem; }
+    .key-concept {
+      background: linear-gradient(135deg, #667eea20, #764ba220);
+      border-left: 4px solid #667eea;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    .pressure-test {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    .pressure-test strong { color: #856404; }
+    .demo { border-top: 1px solid #e5e5e5; padding: 1.5rem; background: white; }
+    .demo h3 { color: #667eea; margin-bottom: 0.75rem; font-size: 1.1rem; }
+    .demo p { margin-bottom: 1rem; }
+    .transcript {
+      background: #1e1e1e;
+      color: #e6e6e6;
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-x: auto;
+    }
+    .transcript .prompt-line { color: #7ee787; }
+    .transcript .reply-line { color: #79c0ff; }
+    footer { text-align: center; padding: 2rem; color: #666; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Coding Agent Tutorial</h1>
+    <p>A literate walkthrough — building a coding agent one iteration at a time</p>
+  </header>
+
+  <div class="container">
+
+    <!-- ITERATIONS -->
+  </div>
+
+  <footer>
+    <p><!-- FOOTER --></p>
+  </footer>
+</body>
+</html>
