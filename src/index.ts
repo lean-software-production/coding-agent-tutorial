@@ -95,14 +95,16 @@ while (true) {
   let reply = await ask();
   messages.push(reply);
 
-  const call = reply.tool_calls?.[0];
-  if (call && call.type === "function") {
-    const { path } = JSON.parse(call.function.arguments);
-    console.log(chalk.yellow(`Tool: read_file(${path})`));
+  const calls = (reply.tool_calls ?? []).filter((c) => c.type === "function");
+  if (calls.length) {
+    for (const call of calls) {
+      const { path } = JSON.parse(call.function.arguments);
+      console.log(chalk.yellow(`Tool: read_file(${path})`));
 
-    const text = await readFile(path);
-    await log(`[tool] ${describe(call)}: ${text.length} chars`);
-    messages.push({ role: "tool", tool_call_id: call.id, content: text });
+      const text = await readFile(path);
+      await log(`[tool] ${describe(call)}: ${text.length} chars`);
+      messages.push({ role: "tool", tool_call_id: call.id, content: text });
+    }
 
     reply = await ask();
     messages.push(reply);
@@ -112,7 +114,7 @@ while (true) {
   if (reply.content) {
     console.log(await marked.parse(reply.content));
   } else if (reply.tool_calls?.length) {
-    console.log(chalk.dim("(The model asked to use another tool. This version runs one tool call per prompt.)"));
+    console.log(chalk.red("(The model asked for more tools after the batch. This version runs one batch per prompt.)"));
   } else {
     console.log(chalk.dim("(The model returned an empty reply.)"));
   }
