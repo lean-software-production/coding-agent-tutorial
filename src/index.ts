@@ -26,6 +26,8 @@ rl.on("SIGINT", () => {
   process.exit(0);
 });
 
+const MAX_ROUNDS = 5;
+
 const tools: OpenAI.ChatCompletionFunctionTool[] = [
   {
     type: "function",
@@ -95,8 +97,10 @@ while (true) {
   let reply = await ask();
   messages.push(reply);
 
-  const calls = (reply.tool_calls ?? []).filter((c) => c.type === "function");
-  if (calls.length) {
+  for (let round = 0; round < MAX_ROUNDS; round++) {
+    const calls = (reply.tool_calls ?? []).filter((c) => c.type === "function");
+    if (!calls.length) break;
+
     for (const call of calls) {
       const { path } = JSON.parse(call.function.arguments);
       console.log(chalk.yellow(`Tool: read_file(${path})`));
@@ -111,11 +115,13 @@ while (true) {
   }
 
   console.log(chalk.blue("Assistant:"));
+  // Text and tool calls can arrive together, so neither may hide the other.
   if (reply.content) {
     console.log(await marked.parse(reply.content));
-  } else if (reply.tool_calls?.length) {
-    console.log(chalk.red("(The model asked for more tools after the batch. This version runs one batch per prompt.)"));
-  } else {
+  }
+  if (reply.tool_calls?.length) {
+    console.log(chalk.red(`(Stopped after ${MAX_ROUNDS} tool-call rounds without a final answer.)`));
+  } else if (!reply.content) {
     console.log(chalk.dim("(The model returned an empty reply.)"));
   }
   console.log(chalk.dim("─".repeat(40)));

@@ -9,7 +9,7 @@
 | 005 | [Basic read file tool](005-basic-read-file-tool.md) | Done |
 | 006 | [Observability](006-observability.md) | Done |
 | 007 | [Multiple tool calls](007-multiple-tool-calls.md) | Done |
-| 008 | [Tool call loop](008-tool-call-loop.md) | Todo |
+| 008 | [Tool call loop](008-tool-call-loop.md) | Done |
 
 ## Status
 
