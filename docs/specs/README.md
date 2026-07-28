@@ -7,7 +7,7 @@
 | 003 | [Stateful agent loop](003-stateful-agent-loop.md) | Done |
 | 004 | [Better CLI UX](004-better-cli-ux.md) | Done |
 | 005 | [Basic read file tool](005-basic-read-file-tool.md) | Done |
-| 006 | [Observability](006-observability.md) | Todo |
+| 006 | [Observability](006-observability.md) | Done |
 | 007 | [Multiple tool calls](007-multiple-tool-calls.md) | Todo |
 | 008 | [Tool call loop](008-tool-call-loop.md) | Todo |
 

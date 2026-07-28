@@ -26,7 +26,7 @@ rl.on("SIGINT", () => {
   process.exit(0);
 });
 
-const tools: OpenAI.ChatCompletionTool[] = [
+const tools: OpenAI.ChatCompletionFunctionTool[] = [
   {
     type: "function",
     function: {
@@ -57,20 +57,42 @@ const readFile = async (path: string) => {
   }
 };
 
+const log = (line: string) =>
+  fs.appendFile("agent.log", `${new Date().toISOString()} ${line}\n`);
+
+const describe = (call: OpenAI.ChatCompletionMessageFunctionToolCall) =>
+  `${call.function.name}(${Object.values(JSON.parse(call.function.arguments)).join(", ")})`;
+
 const messages: OpenAI.ChatCompletionMessageParam[] = [];
 
-const ask = () =>
-  client.chat.completions.create({
-    model: process.env.OPENCODE_MODEL ?? "deepseek-v4-flash",
-    messages,
-    tools,
-  });
+const ask = async () => {
+  await log(`[llm] request: ${messages.length} messages, tools: ${tools.map((t) => t.function.name).join(", ")}`);
+
+  const reply = (
+    await client.chat.completions.create({
+      model: process.env.OPENCODE_MODEL ?? "deepseek-v4-flash",
+      messages,
+      tools,
+    })
+  ).choices[0].message;
+
+  const calls = (reply.tool_calls ?? []).filter((c) => c.type === "function");
+  if (reply.content) {
+    await log(`[llm] response: assistant text: ${reply.content.length} chars`);
+  } else if (calls.length) {
+    await log(`[llm] response: tool_calls: ${calls.map(describe).join(", ")}`);
+  } else {
+    await log("[llm] response: empty");
+  }
+
+  return reply;
+};
 
 while (true) {
   const prompt = await rl.question(chalk.green("You: "));
   messages.push({ role: "user", content: prompt });
 
-  let reply = (await ask()).choices[0].message;
+  let reply = await ask();
   messages.push(reply);
 
   const call = reply.tool_calls?.[0];
@@ -79,9 +101,10 @@ while (true) {
     console.log(chalk.yellow(`Tool: read_file(${path})`));
 
     const text = await readFile(path);
+    await log(`[tool] ${describe(call)}: ${text.length} chars`);
     messages.push({ role: "tool", tool_call_id: call.id, content: text });
 
-    reply = (await ask()).choices[0].message;
+    reply = await ask();
     messages.push(reply);
   }
 
