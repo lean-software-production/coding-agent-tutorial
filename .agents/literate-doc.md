@@ -133,6 +133,7 @@ Show the whole terminal exchange, starting at the shell prompt that launched it 
 - `<span class="shell-line">` — terminal chrome: shell prompts and tool banners such as npm's. Dimmed, because it frames the run rather than being part of it.
 - `<span class="prompt-line">` — lines the user typed.
 - `<span class="reply-line">` — the agent's label lines.
+- `<span class="tool-line">` — the program's tool traces, such as `Tool: read_file(package.json)`. Yellow, matching what the terminal actually prints.
 
 Escape `>` in banner lines as `&gt;`.
 
