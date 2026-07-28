@@ -76,14 +76,14 @@ const ask = async () => {
     })
   ).choices[0].message;
 
+  // A reply can carry text and tool calls at once, so report both rather than
+  // letting one hide the other.
   const calls = (reply.tool_calls ?? []).filter((c) => c.type === "function");
-  if (reply.content) {
-    await log(`[llm] response: assistant text: ${reply.content.length} chars`);
-  } else if (calls.length) {
-    await log(`[llm] response: tool_calls: ${calls.map(describe).join(", ")}`);
-  } else {
-    await log("[llm] response: empty");
-  }
+  const parts = [
+    reply.content ? `assistant text: ${reply.content.length} chars` : "",
+    calls.length ? `tool_calls: ${calls.map(describe).join(", ")}` : "",
+  ].filter(Boolean);
+  await log(`[llm] response: ${parts.join(", ") || "empty"}`);
 
   return reply;
 };
