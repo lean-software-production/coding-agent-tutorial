@@ -38,7 +38,7 @@ The second tool call may happen only after the model has seen `package.json`.
 Run `npm start`, then try:
 
 ```text
-You: Inspect the project tree and tell me what files are in src.
+You: Rename the Tool: label in src/index.ts to Using:.
 ```
 
-The tool loop works, but the only tool is `read_file`; the agent cannot inspect directories or search for unknown files. This explains why a future iteration would add file listing or search tools.
+The agent reads the file and describes the change, but the only tool is `read_file`, so it has to ask you to make the edit yourself. It understands your code but cannot change it. This explains why the next iteration adds an editing tool.

@@ -10,6 +10,9 @@
 | 006 | [Observability](006-observability.md) | Todo |
 | 007 | [Multiple tool calls](007-multiple-tool-calls.md) | Todo |
 | 008 | [Tool call loop](008-tool-call-loop.md) | Todo |
+| 009 | [Edit file tool](009-edit-file-tool.md) | Todo |
+| 010 | [Bash tool](010-bash-tool.md) | Todo |
+| 011 | [Coding system prompt](011-coding-system-prompt.md) | Todo |
 
 ## Status
 
