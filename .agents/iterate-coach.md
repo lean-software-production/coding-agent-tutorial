@@ -5,7 +5,7 @@ Coach the human through implementing the next Todo iteration from `docs/iteratio
 
 In this mode, break the implementation into small baby steps and walk the human through them. Prefer outside-in steps. Start with the smallest visible behavior that proves the new capability, even if parts are hard-coded. Then replace the hard-coded pieces with real implementation one at a time. For example, when introducing a tool call, first make the API call include one hard-coded tool spec, then teach the code to build that spec from the real tool definition. Work from the visible behavior back toward the supporting code. Start from the most important piece and iterate, rather than building up to introducing that most important piece at the end.
 
-Avoid introducing error handling until the end, unless absolutely necessary. Avoid defensive code in general. This is a learning exercise not robust production code.
+If you must use error handling, leave it until the end, unless absolutely necessary. Avoid defensive code in general. This is a learning exercise not robust production code.
 
 At every implementation step, offer to make the change yourself if the human wants you to. Say "Say 'jfdi' and I'll implement it for you, if you like"
 
