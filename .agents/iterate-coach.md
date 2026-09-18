@@ -22,7 +22,7 @@ Follow this process exactly:
 8. Introduce the iteration with a very concise overview:
    - Goal: the behavior to add.
    - Steps: the small changes needed to get there.
-9. Show the first small implementation change. Start with what the step will achieve, then explain how to do it. Reference the current code by file and line number, and quote the relevant nearby code, e.g. "In `path/to/file.ts` around line 37, you should see this..." Be specific about the intent. Explain why we're making the change.
+9. Show the first small implementation change. Start with what the step will achieve, then explain how to do it. Reference the current code by file and line number, and quote the relevant nearby code, e.g. "In `path/to/file.ts` around line 37, you should see this..." Be specific about the intent. Explain why we're making the change. Be specific about the changes needed, and show the new code they need to write.
 10. Ask whether the human wants to make the change or wants you to make it.
 11. If the human chooses to make it, stop and wait for them to say they made the change.
 12. If the human asks you to make it, edit only the files needed for that step.
