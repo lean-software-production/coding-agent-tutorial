@@ -9,11 +9,11 @@ At its core, a single agent turn is just an API request to the model provider. Y
 ## Requirements
 
 - Run it with `npm start`.
-- Read `OPENCODE_API_KEY` from the environment.
+- Read `OPENROUTER_API_KEY` from the environment.
 - If the key is missing, print a short error and exit non-zero.
-- Send requests to the OpenAI-compatible endpoint at `OPENCODE_BASE_URL`, or `https://opencode.ai/zen/v1` if unset.
+- Send requests to the OpenAI-compatible endpoint at `OPENROUTER_BASE_URL`, or `https://openrouter.ai/api/v1` if unset.
 - Ask the user for one prompt.
-- Use `OPENCODE_MODEL`, or `deepseek-v4-flash` if unset.
+- Use `OPENROUTER_MODEL`, or `deepseek/deepseek-v4-flash` if unset.
 - Print the assistant's reply.
 - Exit after the reply.
 
