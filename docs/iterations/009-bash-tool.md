@@ -9,7 +9,7 @@ A shell closes the loop: the agent can now change a file and then check its own 
 ## Requirements
 
 - Run it with `npm start`.
-- Build on 009.
+- Build on 008.
 - Keep the `read_file` and `edit_file` tools and the tool-call loop.
 - Add a `bash` tool.
 - The tool takes a `command` string.
@@ -22,7 +22,7 @@ A shell closes the loop: the agent can now change a file and then check its own 
 
 ## Example
 
-Run `npm start`, then ask for the thing 009 could only half-do:
+Run `npm start`, then ask for the thing 008 could only half-do:
 
 ```text
 You: Rename the Tool: label in src/index.ts to Using:, and make sure it still compiles.

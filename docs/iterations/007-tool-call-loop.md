@@ -9,7 +9,7 @@ To fulfill a prompt, the model might need to run a tool, examine the tool output
 ## Requirements
 
 - Run it with `npm start`.
-- Build on 007.
+- Build on 006.
 - Keep the stateful loop.
 - Keep the `read_file` tool.
 - Handle every tool call in each assistant tool-call response.

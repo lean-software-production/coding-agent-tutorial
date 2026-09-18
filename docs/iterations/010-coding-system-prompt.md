@@ -9,7 +9,7 @@ Every iteration so far gave the agent something it could not do before. This one
 ## Requirements
 
 - Run it with `npm start`.
-- Build on 010.
+- Build on 009.
 - Keep all three tools and the tool-call loop.
 - Put a `system` message at the front of the conversation, before the first user prompt.
 - Send it once. It is the first message of every request, including the ones inside the tool-call loop, and never appears twice.
@@ -28,13 +28,13 @@ Tool: bash(npx tsc --noEmit)
 Assistant: Done. The label is now "Using:" and the project still compiles.
 ```
 
-Nobody asked for the third trace. Run the same prompt against 010 and it is not there. Your own run will wander more than this one; the shape does not. Put the file back with `git checkout src/index.ts`.
+Nobody asked for the third trace. Run the same prompt against 009 and it is not there. Your own run will wander more than this one; the shape does not. Put the file back with `git checkout src/index.ts`.
 
 Now comment out the `system` message and ask again. That is the whole iteration, and it costs one line either way.
 
 ## Pressure test
 
-Plant the same failure as 010:
+Plant the same failure as 009:
 
 ```sh
 echo 'const count: number = "one";' > src/scratch.ts
@@ -54,7 +54,7 @@ Tool: edit_file(scratch-note.txt, title: old, title: new)
 Assistant: Done. The type error is fixed, the project compiles, and the title is now "new".
 ```
 
-It stopped. 010 walked past the red check; four sentences of prompt made it deal with the failure first. Read what it did about it, though: it changed the type annotation to match the bad value. Sometimes it finds a cheaper fix than that:
+It stopped. 009 walked past the red check; four sentences of prompt made it deal with the failure first. Read what it did about it, though: it changed the type annotation to match the bad value. Sometimes it finds a cheaper fix than that:
 
 ```text
 Tool: bash(rm src/scratch.ts && npx tsc --noEmit)

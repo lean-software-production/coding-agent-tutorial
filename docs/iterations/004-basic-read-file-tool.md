@@ -10,7 +10,6 @@ When we make an API call to the model, we can offer it tools. The model may resp
 
 - Run it with `npm start`.
 - Keep the stateful loop from 003.
-- Keep the better CLI UX from 004.
 - Add a `read_file` tool.
 - The tool takes a relative `path`.
 - Only read files inside this project.

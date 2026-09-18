@@ -9,7 +9,7 @@ A second tool is where dispatch appears. The model names the tool it wants; the 
 ## Requirements
 
 - Run it with `npm start`.
-- Build on 008.
+- Build on 007.
 - Keep the `read_file` tool and the tool-call loop.
 - Add an `edit_file` tool.
 - The tool takes a relative `path`, an `old_text`, and a `new_text`.

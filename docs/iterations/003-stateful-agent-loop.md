@@ -31,6 +31,10 @@ The assistant should use earlier turns in the same session.
 
 ## Pressure test
 
-Run `npm start` and have a longer multi-turn conversation: ask three or four short questions and read the transcript back.
+Run `npm start`, then try:
 
-The conversation works, but the plain terminal output starts to blur together. This explains why the next iteration improves the CLI presentation.
+```text
+You: Summarize README.md.
+```
+
+The conversation works, but the agent cannot inspect project files, so it can only guess or ask you to paste the file in. This explains why the next iteration adds a file-reading tool.

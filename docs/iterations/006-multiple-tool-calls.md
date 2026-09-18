@@ -9,7 +9,7 @@ A model may ask for several independent tool calls at once. The agent should run
 ## Requirements
 
 - Run it with `npm start`.
-- Build on 006.
+- Build on 005.
 - Keep the `read_file` tool.
 - Handle every tool call in the assistant's first tool-call response.
 - Treat those tool calls as one batch.

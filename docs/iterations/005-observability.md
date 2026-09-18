@@ -9,7 +9,7 @@ Tool calling can get complicated quickly, so a little logging helps us see what 
 ## Requirements
 
 - Run it with `npm start`.
-- Build on 005.
+- Build on 004.
 - Append concise logs to `agent.log`.
 - Add `agent.log` to `.gitignore`.
 - Keep the logging code in `src/index.ts`.

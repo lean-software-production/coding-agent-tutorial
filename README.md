@@ -36,7 +36,7 @@ Read kata/bowling/README.md and build the bowling scorer test-first.
 Run `npm run kata` to check your work.
 ```
 
-Nothing in that says how to work. That comes from the system prompt you wrote in iteration 011. `npm run kata` runs that folder alone, with Node's built-in test runner, so nothing needs installing and a half-finished scorer never breaks anything else.
+Nothing in that says how to work. That comes from the system prompt you wrote in iteration 010. `npm run kata` runs that folder alone, with Node's built-in test runner, so nothing needs installing and a half-finished scorer never breaks anything else.
 
 The folder holds one file; your agent has to make the rest. Watch what it does, and watch for the three ways it goes wrong: writing the code before the test, making a failing test pass by editing the test, and saying it is done without running anything. When it does one of those, the system prompt is the thing to change, not the code. You are not expected to finish. Three rules green, written test-first, is the exercise working.
 

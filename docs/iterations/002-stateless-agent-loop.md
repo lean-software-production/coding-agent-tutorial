@@ -9,7 +9,7 @@ The feeling of an interactive agent chat comes from a loop, but without memory o
 ## Requirements
 
 - Run it with `npm start`.
-- Keep the `You:` and `Assistant:` labels.
+- Keep the `You:` and `Assistant:` labels and the Markdown rendering from 001.
 - After each assistant reply, ask for another prompt.
 - Send only the latest user prompt to the LLM.
 - Do not send previous prompts or replies.

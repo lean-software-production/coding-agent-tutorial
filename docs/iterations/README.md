@@ -5,14 +5,13 @@
 | 001 | [Single turn](001-single-turn.md) | Todo |
 | 002 | [Stateless agent loop](002-stateless-agent-loop.md) | Todo |
 | 003 | [Stateful agent loop](003-stateful-agent-loop.md) | Todo |
-| 004 | [Better CLI UX](004-better-cli-ux.md) | Todo |
-| 005 | [Basic read file tool](005-basic-read-file-tool.md) | Todo |
-| 006 | [Observability](006-observability.md) | Todo |
-| 007 | [Multiple tool calls](007-multiple-tool-calls.md) | Todo |
-| 008 | [Tool call loop](008-tool-call-loop.md) | Todo |
-| 009 | [Edit file tool](009-edit-file-tool.md) | Todo |
-| 010 | [Bash tool](010-bash-tool.md) | Todo |
-| 011 | [Coding system prompt](011-coding-system-prompt.md) | Todo |
+| 004 | [Basic read file tool](004-basic-read-file-tool.md) | Todo |
+| 005 | [Observability](005-observability.md) | Todo |
+| 006 | [Multiple tool calls](006-multiple-tool-calls.md) | Todo |
+| 007 | [Tool call loop](007-tool-call-loop.md) | Todo |
+| 008 | [Edit file tool](008-edit-file-tool.md) | Todo |
+| 009 | [Bash tool](009-bash-tool.md) | Todo |
+| 010 | [Coding system prompt](010-coding-system-prompt.md) | Todo |
 
 ## Status
 
