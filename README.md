@@ -48,7 +48,7 @@ This checks for Node.js 20+, npm, git, installed dependencies, and your API key,
 
 ## Get started
 
-Fire up your favourite coding agent, and say "coach me". It should walk you through the process of building your own coding agent, using the specs in [`docs/specs`](docs/specs) as guidance.
+Fire up your favourite coding agent, and say "coach me". It should walk you through the process of building your own coding agent, using the specs in [`docs/iterations`](docs/iterations) as guidance.
 
 If you want the agent to do the work automatically instead, say "implement it". It should implement one iteration, commit it, show you what changed, give you an example to try, explain the remaining pressure test, then ask whether to continue.
 

@@ -1,11 +1,11 @@
 ---
 description: Implement the next Todo spec iteration
 ---
-Implement the next Todo iteration from `docs/specs/README.md`.
+Implement the next Todo iteration from `docs/iterations/README.md`.
 
 Follow this process exactly:
 
-1. Read `docs/specs/README.md`.
+1. Read `docs/iterations/README.md`.
 2. Find the first ledger row whose status is exactly `Todo`.
 3. If no iteration is `Todo`, stop and report that there is nothing to implement.
 4. Read the spec linked from that row.

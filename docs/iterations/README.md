@@ -1,4 +1,4 @@
-# Specs
+# Iterations
 
 | Iteration | Spec | Status |
 |---|---|---|

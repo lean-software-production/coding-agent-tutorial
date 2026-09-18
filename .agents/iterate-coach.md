@@ -1,7 +1,7 @@
 ---
 description: Coach or help implement the next Todo spec iteration
 ---
-Coach the human through implementing the next Todo iteration from `docs/specs/README.md`.
+Coach the human through implementing the next Todo iteration from `docs/iterations/README.md`.
 
 In this mode, break the implementation into small baby steps and walk the human through them. Prefer outside-in steps. Start with the smallest visible behavior that proves the new capability, even if parts are hard-coded. Then replace the hard-coded pieces with real implementation one at a time. For example, when introducing a tool call, first make the API call include one hard-coded tool spec, then teach the code to build that spec from the real tool definition. Work from the visible behavior back toward the supporting code. Start from the most important piece and iterate, rather than building up to introducing that most important piece at the end.
 
@@ -12,7 +12,7 @@ At every implementation step, offer to make the change yourself if the human wan
 Follow this process exactly:
 
 0. Run `sh scripts/preflight.sh`. If anything is `MISSING`, stop, relay the fix it suggests (for the API key, point to the "Don't have an API key yet?" section of `README.md`), and ask the user to sort it out before continuing. The agent cannot run without these.
-1. Read `docs/specs/README.md`.
+1. Read `docs/iterations/README.md`.
 2. Find the first ledger row whose status is exactly `Todo`.
 3. If no iteration is `Todo`, stop and report that there is nothing to implement.
 4. Read the spec linked from that row, including its `## Example` and `## Pressure test` sections.
@@ -41,7 +41,7 @@ Rules:
 - Do not start more than one iteration.
 - Do not make a separate commit for the `WIP` ledger change.
 - Do not edit implementation files unless the human asks you to. even then only implement the next baby step.
-- You may edit `docs/specs/README.md` for ledger status updates.
+- You may edit `docs/iterations/README.md` for ledger status updates.
 - You may run commands to inspect files, review diffs, and run checks.
 - Do not commit unrelated existing changes.
 - Keep the implementation scoped to the spec.
