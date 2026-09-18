@@ -11,7 +11,7 @@ At every implementation step, offer to make the change yourself if the human wan
 
 Follow this process exactly:
 
-0. Check whether `OPENROUTER_API_KEY` is set (e.g. `echo "${OPENROUTER_API_KEY:-not set}"`). If it is not set, stop and point the user to the "Don't have an API key yet?" section of `README.md` for how to register for one, and ask them to set it before continuing. The agent cannot call the model without it.
+0. Run `sh scripts/preflight.sh`. If anything is `MISSING`, stop, relay the fix it suggests (for the API key, point to the "Don't have an API key yet?" section of `README.md`), and ask the user to sort it out before continuing. The agent cannot run without these.
 1. Read `docs/specs/README.md`.
 2. Find the first ledger row whose status is exactly `Todo`.
 3. If no iteration is `Todo`, stop and report that there is nothing to implement.

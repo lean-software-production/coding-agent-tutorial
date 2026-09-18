@@ -4,7 +4,7 @@ Software engineers use coding agents daily. But do you actually know how they wo
 
 ## Setup
 
-Assume Node.js is installed.
+Assume Node.js 24 or later is installed.
 
 ```sh
 npm install
@@ -12,39 +12,39 @@ npm install
 
 Set your [OpenRouter](https://openrouter.ai/) API key and model. OpenRouter exposes an OpenAI-compatible API at `https://openrouter.ai/api/v1`, so the standard `openai` npm package works — just point its `baseURL` at that endpoint. Model names are prefixed with the provider, e.g. `deepseek/deepseek-v4-flash`.
 
+Copy the example env file and fill in your key:
+
 ```sh
-export OPENROUTER_API_KEY=your-key
-export OPENROUTER_BASE_URL='https://openrouter.ai/api/v1'
-export OPENROUTER_MODEL='deepseek/deepseek-v4-flash'
+cp .env.example .env
 ```
 
-For a more capable model:
+`.env` is git-ignored, and `npm start` loads it automatically using Node's built-in `--env-file-if-exists` flag, so no extra tooling is needed.
+
+For a more capable model, change the model line in `.env`:
 ```sh
-export OPENROUTER_MODEL='anthropic/claude-sonnet-5'
+OPENROUTER_MODEL=anthropic/claude-sonnet-5
 ```
 
 ### Don't have an API key yet?
 
-If `OPENROUTER_API_KEY` isn't set, you can check with:
-
-```sh
-echo "${OPENROUTER_API_KEY:-not set}"
-```
-
-If it prints `not set`, register for one:
+If `.env` doesn't exist yet, or still contains `your-key`, you need one:
 
 1. Go to [openrouter.ai](https://openrouter.ai/) and sign in (GitHub and Google sign-in are supported).
 2. Add credits at [openrouter.ai/credits](https://openrouter.ai/credits) — OpenRouter is usage-based, so you pay per token. The cheap default model (`deepseek/deepseek-v4-flash`) costs only a fraction of a cent for this tutorial.
 3. Create a new API key at [openrouter.ai/keys](https://openrouter.ai/keys) and copy it (you'll only see the full key once).
-4. Export it in your shell so this project can find it:
+4. Put it in `.env` so this project can find it:
 
    ```sh
-   export OPENROUTER_API_KEY='your-key'
+   OPENROUTER_API_KEY=your-key
    ```
 
-   To persist it across shell sessions, add that line to your shell profile
-   (e.g. `~/.bashrc` or `~/.zshrc`), or drop it into `.local/secrets.envrc`
-   (already sourced by `.envrc` and git-ignored) if you use `direnv`.
+## Check you're ready
+
+```sh
+sh scripts/preflight.sh
+```
+
+This checks for Node.js 20+, npm, git, installed dependencies, and your API key, and tells you how to fix anything that's missing. It's plain shell so it works even before Node.js is installed.
 
 ## Get started
 

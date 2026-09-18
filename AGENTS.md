@@ -23,5 +23,5 @@ Follow Kent Beck's rules of simple design, in order:
 - When the user says "implement it" or asks for guided automatic implementation, read and follow `.agents/implement-it.md`.
 - When the user asks to "iterate fast" or to implement the next Todo spec iteration automatically, read and follow `.agents/iterate-fast.md`.
 - When the user says "coach me", asks to "iterate coach", or wants to be coached through the next Todo spec iteration, read and follow `.agents/iterate-coach.md`.
-  - Preflight: before coaching, check whether `OPENROUTER_API_KEY` is set in the environment (e.g. `echo "${OPENROUTER_API_KEY:-not set}"`). If it is not set, point the user to the "Don't have an API key yet?" section of `README.md` for how to register for one, and ask them to set it before continuing.
+  - Preflight: before coaching, run `sh scripts/preflight.sh`. It checks for Node.js 24+, npm, git, installed dependencies, and a real `OPENROUTER_API_KEY` (in the environment or `.env`). If anything is `MISSING`, relay the fix it suggests (for the API key, point to the "Don't have an API key yet?" section of `README.md`) and ask the user to sort it out before continuing.
 - When the user asks only to "iterate" and does not specify fast, coach, or implement-it, ask which workflow they want.
