@@ -9,14 +9,12 @@ At its core, a single agent turn is just an API request to the model provider. Y
 ## Requirements
 
 - Run it with `npm start`.
-- Read `OPENROUTER_API_KEY` from the environment.
-- If the key is missing, print a short error and exit non-zero.
-- Send requests to the OpenAI-compatible endpoint at `OPENROUTER_BASE_URL`, or `https://openrouter.ai/api/v1` if unset.
+- Use the OpenRouter SDK (`@openrouter/sdk`), which reads `OPENROUTER_API_KEY` from the environment itself.
 - Ask the user for one prompt.
 - Use `OPENROUTER_MODEL`, or `deepseek/deepseek-v4-flash` if unset.
 - Print the assistant's reply.
 - Colour the `You:` and `Assistant:` labels, using `chalk`.
-- Render the reply as terminal-friendly Markdown, using `marked` and `marked-terminal`. All three packages are already installed.
+- Render the reply as terminal-friendly Markdown, using `marked` and `marked-terminal`.
 - Print a subtle horizontal rule after the reply.
 - Keep the presentation code small and easy to read.
 - Exit after the reply.
