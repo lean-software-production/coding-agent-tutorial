@@ -10,8 +10,15 @@ cd "$(dirname "$0")"
 check_only=false
 [ "$1" = "--check" ] && check_only=true
 
-pass() { printf '  ok       %s\n' "$1"; }
-fail() { printf '  MISSING  %s\n' "$1"; echo; echo "Fix that, then run ./setup again."; exit 1; }
+if [ -t 1 ] && [ -z "$NO_COLOR" ] && [ "$TERM" != "dumb" ]; then
+  green='\033[32m'; red='\033[31m'; yellow='\033[33m'; bold='\033[1m'; reset='\033[0m'
+else
+  green=''; red=''; yellow=''; bold=''; reset=''
+fi
+
+pass() { printf "  ${green}✓ ok${reset}       %s\n" "$1"; }
+fail() { printf "  ${red}✗ MISSING${reset}  %s\n" "$1"; echo; echo "Fix that, then run ./setup again."; exit 1; }
+step() { printf "  ${yellow}…${reset}        %s\n" "$1"; }
 
 if command -v node >/dev/null 2>&1; then
   version=$(node --version)
@@ -42,7 +49,7 @@ if [ -d node_modules ]; then
 elif $check_only; then
   fail "dependencies - run: ./setup"
 else
-  printf '  ...      installing dependencies\n'
+  step "installing dependencies"
   npm install --silent
   pass "dependencies installed"
 fi
@@ -56,4 +63,4 @@ else
   npx tsx scripts/set-key.ts
 fi
 
-echo "All good. Fire up your coding agent and say \"coach me\"."
+printf "\n${green}${bold}All good.${reset} Fire up your coding agent and say \"coach me\".\n"
