@@ -10,6 +10,8 @@ Software engineers use coding agents daily. But do you actually know how they wo
 
 This checks you have Node.js 24+, npm and git, installs dependencies, and asks for your [OpenRouter](https://openrouter.ai/) API key. Paste it in and it writes it to `.env` (git-ignored), which `npm start` loads automatically.
 
+Don't have Node.js yet? Install it from [nodejs.org](https://nodejs.org/en/download) (npm comes with it).
+
 Don't have a key yet?
 
 1. Go to [openrouter.ai](https://openrouter.ai/) and sign in (GitHub and Google sign-in are supported).

@@ -26,10 +26,10 @@ if command -v node >/dev/null 2>&1; then
   if [ "$major" -ge 24 ]; then
     pass "Node.js $version"
   else
-    fail "Node.js 24 or newer (you have $version) - https://nodejs.org"
+    fail "Node.js 24 or newer (you have $version) - install it from https://nodejs.org/en/download"
   fi
 else
-  fail "Node.js - install it from https://nodejs.org (npm comes with it)"
+  fail "Node.js - install it from https://nodejs.org/en/download (npm comes with it)"
 fi
 
 if command -v npm >/dev/null 2>&1; then
