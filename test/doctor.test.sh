@@ -15,7 +15,9 @@ EOF
 }
 
 run_doctor() {
-  env PATH="$temp/bin:/usr/bin:/bin" HOME="$temp/home" DOCTOR_PROJECT_ROOT="$temp/project" OPENROUTER_API_KEY=test-key "$root/bin/doctor" "$@"
+  env PATH="$temp/bin:/usr/bin:/bin" HOME="$temp/home" DOCTOR_PROJECT_ROOT="$temp/project" OPENROUTER_API_KEY=test-key \
+    PI_AUTH_STATE="${PI_AUTH_STATE:-}" ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}" PI_CODING_AGENT_DIR="${PI_CODING_AGENT_DIR:-}" \
+    "$root/bin/doctor" "$@"
 }
 
 real_node=$(command -v node)
@@ -26,8 +28,15 @@ stub pi '
 case "$1" in
   --version) echo pi-test ;;
   auth)
+    provider=""
+    while [ $# -gt 0 ]; do
+      [ "$1" = --provider ] && provider=$2
+      shift
+    done
     case "${PI_AUTH_STATE:-ready}" in
       ready) printf "{\\"status\\":\\"valid\\"}\\n"; exit 0 ;;
+      anthropic-only) [ "$provider" = anthropic ] ;;
+      xai-only) [ "$provider" = xai ] ;;
       stale|unknown) printf "{\\"status\\":\\"invalid\\"}\\n"; exit 1 ;;
     esac ;;
 esac'
@@ -73,6 +82,48 @@ if PI_AUTH_STATE=unknown run_doctor --agent pi --no-color >"$temp/pi-unknown.out
   exit 1
 fi
 grep -q 'Pi provider authentication missing or invalid' "$temp/pi-unknown.out"
+
+# Environment-only auth is a candidate, but Pi's native check still decides it.
+mv "$temp/home/.pi/agent/auth.json" "$temp/home/.pi/agent/auth.saved"
+mv "$temp/home/.pi/agent/settings.json" "$temp/home/.pi/agent/settings.saved"
+if ! ANTHROPIC_API_KEY=anthropic-env-secret PI_AUTH_STATE=anthropic-only run_doctor --agent pi --no-color >"$temp/pi-env.out"; then
+  echo 'environment-only Pi authentication unexpectedly failed' >&2
+  exit 1
+fi
+grep -q 'configured for anthropic' "$temp/pi-env.out"
+if grep -q 'anthropic-env-secret' "$temp/pi-env.out"; then
+  echo 'doctor displayed an environment credential' >&2
+  exit 1
+fi
+mv "$temp/home/.pi/agent/auth.saved" "$temp/home/.pi/agent/auth.json"
+mv "$temp/home/.pi/agent/settings.saved" "$temp/home/.pi/agent/settings.json"
+
+# Unknown or ambiguous stored candidates do not pass without native validation.
+printf '{"mystery":{"access":"unknown-secret"}}\n' >"$temp/home/.pi/agent/auth.json"
+printf '{"defaultProvider":"also-mystery","defaultModel":"not-qualified"}\n' >"$temp/home/.pi/agent/settings.json"
+if PI_AUTH_STATE=unknown run_doctor --agent pi --no-color >"$temp/pi-ambiguous.out" 2>&1; then
+  echo 'unknown stored Pi candidates unexpectedly passed' >&2
+  exit 1
+fi
+grep -q 'configured provider(s): also-mystery mystery openrouter' "$temp/pi-ambiguous.out"
+if grep -q 'unknown-secret' "$temp/pi-ambiguous.out"; then
+  echo 'doctor displayed an unknown-provider credential' >&2
+  exit 1
+fi
+
+# PI_CODING_AGENT_DIR takes precedence over ~/.pi/agent.
+mkdir -p "$temp/alternate"
+printf '{"xai":{"access":"alternate-secret"}}\n' >"$temp/alternate/auth.json"
+printf '{"defaultProvider":"xai"}\n' >"$temp/alternate/settings.json"
+if ! PI_CODING_AGENT_DIR="$temp/alternate" PI_AUTH_STATE=xai-only run_doctor --agent pi --no-color >"$temp/pi-dir.out"; then
+  echo 'Pi authentication in PI_CODING_AGENT_DIR unexpectedly failed' >&2
+  exit 1
+fi
+grep -q 'configured for xai' "$temp/pi-dir.out"
+if grep -q 'alternate-secret' "$temp/pi-dir.out"; then
+  echo 'doctor displayed an overridden-directory credential' >&2
+  exit 1
+fi
 
 # Missing executables always fail, even with the implicit default policy.
 mv "$temp/bin/codex" "$temp/bin/codex.off"

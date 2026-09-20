@@ -90,22 +90,42 @@ check_pi() {
   if ! command -v pi >/dev/null 2>&1; then fail 'Pi not installed — rebuild the dev container'; return; fi
   pass "Pi installed ($(pi --version 2>/dev/null | head -n 1))"
 
-  # Only provider names and the selected provider leave this parser; credentials
-  # stay in auth.json and are checked by Pi itself below.
+  # Only provider names leave this parser; credentials stay in Pi's files and
+  # are checked by Pi itself below.
+  pi_agent_dir=${PI_CODING_AGENT_DIR:-"${HOME}/.pi/agent"}
   pi_providers=$(node -e '
     const fs = require("fs");
-    const home = process.argv[1];
+    const agentDir = process.argv[1];
     const read = (name) => {
-      try { return JSON.parse(fs.readFileSync(`${home}/.pi/agent/${name}`, "utf8")); }
+      try { return JSON.parse(fs.readFileSync(`${agentDir}/${name}`, "utf8")); }
       catch { return {}; }
     };
     const auth = read("auth.json");
     const settings = read("settings.json");
-    const selected = typeof settings.defaultModel === "string"
-      ? settings.defaultModel.split("/")[0] : "";
-    const providers = Object.keys(auth).filter((key) => key !== "version");
-    console.log([...new Set([selected, ...providers].filter(Boolean))].join("\\n"));
-  ' "${HOME}" 2>/dev/null || true)
+    const candidates = [];
+    const add = (provider) => {
+      if (typeof provider === "string" && provider) candidates.push(provider);
+    };
+    add(settings.defaultProvider);
+    if (typeof settings.defaultModel === "string" && settings.defaultModel.includes("/")) {
+      add(settings.defaultModel.split("/", 1)[0]);
+    }
+    if (auth && typeof auth === "object") {
+      for (const [provider, value] of Object.entries(auth)) {
+        if (provider !== "version" && value && typeof value === "object") add(provider);
+      }
+    }
+    for (const [variable, provider] of Object.entries({
+      ANTHROPIC_API_KEY: "anthropic",
+      OPENAI_API_KEY: "openai",
+      GEMINI_API_KEY: "google",
+      XAI_API_KEY: "xai",
+      OPENROUTER_API_KEY: "openrouter",
+    })) {
+      if (process.env[variable]) add(provider);
+    }
+    console.log([...new Set(candidates)].join("\n"));
+  ' "$pi_agent_dir" 2>/dev/null || true)
 
   pi_configured=false
   while IFS= read -r provider; do
