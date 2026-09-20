@@ -4,28 +4,82 @@ Software engineers use coding agents daily. But do you actually know how they wo
 
 ## Setup
 
+### GitHub Codespaces or a local Dev Container
+
+This repository includes a Dev Container with Node.js 24, npm, git, and three
+coaching harnesses: [Pi](https://github.com/earendil-works/pi), Claude Code,
+and Codex. No credentials are stored in the image or repository.
+
+The container also installs the optional [OpenAI Codex VS Code
+extension](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt)
+in its remote extension host.
+
+- In GitHub, choose **Code → Create codespace on main**.
+- Locally, open this folder in VS Code and choose **Dev Containers: Reopen in
+  Container**.
+- After the container is created, authenticate one harness as the `node` user:
+  `pi` then `/login`, `claude auth login`, or `codex login`.
+
+Check the result without sending a model request:
+
+```sh
+bin/doctor                 # any one configured harness is enough
+bin/doctor --agent pi      # require Pi specifically
+bin/doctor --agent claude  # require Claude Code specifically
+bin/doctor --agent codex   # require Codex specifically
+bin/doctor --agent all     # require all three
+```
+
+`bin/doctor --live` is intentionally explicit: it sends one minimal request to
+the tutorial application's configured OpenRouter model, so it uses the network
+and may consume model quota. The normal check never makes a model call.
+
+### Tutorial application
+
+Harness authentication is separate from the OpenRouter key used by the tutorial
+application. The container installs npm dependencies after creation, but it
+never asks for or saves an OpenRouter key. Set that key up yourself:
+
 ```sh
 ./setup
 ```
 
 This checks you have Node.js 24+, npm and git, installs dependencies, and asks for your [OpenRouter](https://openrouter.ai/) API key. Paste it in and it writes it to `.env` (git-ignored), which `npm start` loads automatically.
 
+Use `./setup --check` for the same project and application-key checks without
+installing packages, prompting, or contacting OpenRouter. It deliberately does
+not require a coaching harness; use `bin/doctor` for that.
+
+Build and run the application with:
+
+```sh
+npm run build
+npm start
+```
+
 Don't have Node.js yet? Install it from [nodejs.org](https://nodejs.org/en/download) (npm comes with it).
 
 Don't have a key yet?
 
 1. Go to [openrouter.ai](https://openrouter.ai/) and sign in (GitHub and Google sign-in are supported).
-2. Add credits at [openrouter.ai/credits](https://openrouter.ai/credits) — OpenRouter is usage-based, so you pay per token. The cheap default model (`deepseek/deepseek-v4-flash`) costs only a fraction of a cent for this tutorial.
+2. Add credits at [openrouter.ai/credits](https://openrouter.ai/credits) — OpenRouter is usage-based, so you pay per token.
 3. Create a key at [openrouter.ai/keys](https://openrouter.ai/keys) and copy it (you'll only see it once), then run `./setup` and paste it in.
 
-For a more capable model, change the model line in `.env`:
+The tutorial defaults to `openai/gpt-5.6-luna`. To use a different model, change
+the model line in `.env`:
 ```sh
 OPENROUTER_MODEL=anthropic/claude-sonnet-5
 ```
 
 ## Get started
 
-Fire up your favourite coding agent, and say "coach me". It should walk you through the process of building your own coding agent, using the specs in [`docs/iterations`](docs/iterations) as guidance.
+Start the harness you authenticated—`pi`, `claude`, or `codex`—in this folder,
+then say "coach me". Pi and Codex discover `AGENTS.md`; Claude Code discovers
+[`CLAUDE.md`](CLAUDE.md), which imports it. They will walk you through building
+your own coding agent using the specs in
+[`docs/iterations`](docs/iterations) as guidance. Run `./setup --check` first:
+coaching needs the separate OpenRouter application key because the tutorial you
+build will use it.
 
 If you want the agent to do the work automatically instead, say "implement it". It should implement one iteration, commit it, show you what changed, give you an example to try, explain the remaining pressure test, then ask whether to continue.
 
@@ -45,4 +99,3 @@ The folder holds one file; your agent has to make the rest. Watch what it does, 
 ## Credit
 
 Inspired by [simple-agent-demo](https://github.com/SDiamante13/simple-agent-demo).
-

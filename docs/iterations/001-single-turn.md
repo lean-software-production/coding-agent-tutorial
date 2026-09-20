@@ -11,7 +11,7 @@ At its core, a single agent turn is just an API request to the model provider. Y
 - Run it with `npm start`.
 - Use the OpenRouter SDK (`@openrouter/sdk`), which reads `OPENROUTER_API_KEY` from the environment itself.
 - Ask the user for one prompt, using `@inquirer/prompts`.
-- Use `OPENROUTER_MODEL`, or `deepseek/deepseek-v4-flash` if unset.
+- Use `OPENROUTER_MODEL`, or `openai/gpt-5.6-luna` if unset.
 - Print the assistant's reply.
 - Colour the `You:` and `Assistant:` labels, using `chalk`.
 - Render the reply as terminal-friendly Markdown, using `marked` and `marked-terminal`.
