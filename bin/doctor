@@ -4,6 +4,7 @@ set -u
 
 root=${DOCTOR_PROJECT_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}
 agent=all
+agent_explicit=false
 require_openrouter=true
 live=false
 color=true
@@ -20,8 +21,8 @@ EOF
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --agent) agent=${2:-}; shift 2 ;;
-    --agent=*) agent=${1#*=}; shift ;;
+    --agent) agent=${2:-}; agent_explicit=true; shift 2 ;;
+    --agent=*) agent=${1#*=}; agent_explicit=true; shift ;;
     --setup-check) require_openrouter=true; agent=none; shift ;;
     --live) live=true; shift ;;
     --no-color) color=false; shift ;;
@@ -42,6 +43,9 @@ requested_agents=0
 pass() { printf '%sPASS%s  %s\n' "$green" "$reset" "$1"; }
 warn() { printf '%sWARN%s  %s\n' "$yellow" "$reset" "$1"; }
 fail() { printf '%sFAIL%s  %s\n' "$red" "$reset" "$1"; failed=1; }
+auth_missing() {
+  if "$agent_explicit"; then fail "$1"; else warn "$1"; fi
+}
 
 check_command() {
   if command -v "$1" >/dev/null 2>&1; then
@@ -81,23 +85,45 @@ if "$require_openrouter"; then
   fi
 fi
 
-config_value() {
-  # Prints one non-secret configuration value, if the CLI exposes it.
-  "$@" 2>/dev/null | head -n 1 || true
-}
-
 check_pi() {
   requested_agents=$((requested_agents + 1))
   if ! command -v pi >/dev/null 2>&1; then fail 'Pi not installed — rebuild the dev container'; return; fi
   pass "Pi installed ($(pi --version 2>/dev/null | head -n 1))"
-  if [ -s "${HOME}/.pi/agent/auth.json" ]; then
-    pass 'Pi provider authentication configured (credentials not displayed)'
+
+  # Only provider names and the selected provider leave this parser; credentials
+  # stay in auth.json and are checked by Pi itself below.
+  pi_providers=$(node -e '
+    const fs = require("fs");
+    const home = process.argv[1];
+    const read = (name) => {
+      try { return JSON.parse(fs.readFileSync(`${home}/.pi/agent/${name}`, "utf8")); }
+      catch { return {}; }
+    };
+    const auth = read("auth.json");
+    const settings = read("settings.json");
+    const selected = typeof settings.defaultModel === "string"
+      ? settings.defaultModel.split("/")[0] : "";
+    const providers = Object.keys(auth).filter((key) => key !== "version");
+    console.log([...new Set([selected, ...providers].filter(Boolean))].join("\\n"));
+  ' "${HOME}" 2>/dev/null || true)
+
+  pi_configured=false
+  while IFS= read -r provider; do
+    [ -n "$provider" ] || continue
+    if pi auth check --provider "$provider" --json --no-refresh >/dev/null 2>&1; then
+      pass "Pi provider authentication configured for $provider (credentials not displayed)"
+      pi_configured=true
+      break
+    fi
+  done <<EOF
+$pi_providers
+EOF
+  if "$pi_configured"; then
     agent_ready=$((agent_ready + 1))
   else
-    fail 'Pi provider authentication missing — run pi, then /login'
+    auth_missing 'Pi provider authentication missing or invalid — run pi, then /login'
   fi
-  model=$(config_value pi config get model)
-  [ -n "$model" ] && pass "Pi model/default: $model" || warn 'Pi model/default is selected in Pi; no local default reported'
+  [ -n "$pi_providers" ] && pass "Pi configured provider(s): $(printf '%s' "$pi_providers" | tr '\n' ' ')" || warn 'Pi provider/default selection is not locally configured'
 }
 
 check_claude() {
@@ -108,10 +134,9 @@ check_claude() {
     pass 'Claude Code provider authentication configured (credentials not displayed)'
     agent_ready=$((agent_ready + 1))
   else
-    fail 'Claude Code provider authentication missing — run: claude login'
+    auth_missing 'Claude Code provider authentication missing — run: claude auth login'
   fi
-  model=$(config_value claude config get model)
-  [ -n "$model" ] && pass "Claude Code model/default: $model" || warn 'Claude Code model/default is not locally configured'
+  warn 'Claude Code model/default is selected by Claude Code; no non-interactive value reported'
 }
 
 check_codex() {
@@ -122,7 +147,7 @@ check_codex() {
     pass 'Codex provider authentication configured (credentials not displayed)'
     agent_ready=$((agent_ready + 1))
   else
-    fail 'Codex provider authentication missing — run: codex login'
+    auth_missing 'Codex provider authentication missing — run: codex login'
   fi
   model=$(sed -n 's/^model[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "${HOME}/.codex/config.toml" 2>/dev/null | head -n 1)
   [ -n "$model" ] && pass "Codex model/default: $model" || warn 'Codex model/default is not locally configured'
@@ -137,8 +162,10 @@ case "$agent" in
   none) pass 'agent checks deferred to setup --check' ;;
 esac
 
-if [ "$agent" = all ] && [ "$agent_ready" -eq 0 ]; then
+if [ "$agent" = all ] && ! "$agent_explicit" && [ "$agent_ready" -eq 0 ]; then
   fail 'no coaching harness is configured — authenticate Pi, Claude Code, or Codex'
+elif [ "$agent" = all ] && "$agent_explicit" && [ "$agent_ready" -ne "$requested_agents" ]; then
+  fail 'all selected coaching harnesses must be configured'
 elif [ "$agent" != all ] && [ "$agent" != none ] && [ "$agent_ready" -eq 0 ]; then
   fail "selected coaching harness ($agent) is not configured"
 fi

@@ -14,7 +14,7 @@ and Codex. No credentials are stored in the image or repository.
 - Locally, open this folder in VS Code and choose **Dev Containers: Reopen in
   Container**.
 - After the container is created, authenticate one harness as the `node` user:
-  `pi` then `/login`, `claude login`, or `codex login`.
+  `pi` then `/login`, `claude auth login`, or `codex login`.
 
 Check the result without sending a model request:
 
@@ -69,8 +69,9 @@ OPENROUTER_MODEL=anthropic/claude-sonnet-5
 ## Get started
 
 Start the harness you authenticated—`pi`, `claude`, or `codex`—in this folder,
-then say "coach me". All three discover this repository's `AGENTS.md`, so they
-will walk you through building your own coding agent using the specs in
+then say "coach me". Pi and Codex discover `AGENTS.md`; Claude Code discovers
+[`CLAUDE.md`](CLAUDE.md), which imports it. They will walk you through building
+your own coding agent using the specs in
 [`docs/iterations`](docs/iterations) as guidance. Run `./setup --check` first:
 coaching needs the separate OpenRouter application key because the tutorial you
 build will use it.
