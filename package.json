@@ -8,7 +8,9 @@
   },
   "scripts": {
     "start": "tsx --env-file-if-exists=.env src/index.ts",
-    "kata": "node --test 'kata/**/*.test.ts'"
+    "build": "tsc --noEmit",
+    "kata": "node --test 'kata/**/*.test.ts'",
+    "test": "bash test/doctor.test.sh"
   },
   "dependencies": {
     "@inquirer/prompts": "^8.7.2",

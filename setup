@@ -3,12 +3,16 @@
 # It checks for the tools you need, installs dependencies, then asks for your API key.
 # It is plain shell on purpose: it must work before Node.js is installed.
 #
-# With --check, it only reports what's missing instead of installing or prompting -
-# for a coding agent to run to verify things are ready, without risking a hang on input.
+# With --check, it delegates to bin/doctor. That keeps the non-interactive
+# readiness rules in one place while this script remains the interactive setup.
 set -e
 cd "$(dirname "$0")"
 check_only=false
 [ "$1" = "--check" ] && check_only=true
+
+if $check_only; then
+  exec "$(dirname "$0")/bin/doctor" --setup-check
+fi
 
 if [ -t 1 ] && [ -z "$NO_COLOR" ] && [ "$TERM" != "dumb" ]; then
   green='\033[32m'; red='\033[31m'; yellow='\033[33m'; bold='\033[1m'; reset='\033[0m'
@@ -46,8 +50,6 @@ fi
 
 if [ -d node_modules ]; then
   pass "dependencies installed"
-elif $check_only; then
-  fail "dependencies - run: ./setup"
 else
   step "installing dependencies"
   npm install --silent

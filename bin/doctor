@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+# Read-only readiness report for the tutorial and its coaching harnesses.
+set -u
+
+root=${DOCTOR_PROJECT_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}
+agent=all
+require_openrouter=true
+live=false
+color=true
+
+usage() {
+  cat <<'EOF'
+Usage: bin/doctor [--agent pi|claude|codex|all] [--live] [--no-color]
+
+Checks the tutorial, its OpenRouter application key, and installed coaching
+harnesses. --live sends one minimal request to the tutorial application's
+OpenRouter model. It uses the network and may consume model quota.
+EOF
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --agent) agent=${2:-}; shift 2 ;;
+    --agent=*) agent=${1#*=}; shift ;;
+    --setup-check) require_openrouter=true; agent=none; shift ;;
+    --live) live=true; shift ;;
+    --no-color) color=false; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'FAIL  Unknown option: %s\n' "$1" >&2; usage >&2; exit 2 ;;
+  esac
+done
+
+case "$agent" in pi|claude|codex|all|none) ;; *) printf 'FAIL  Unknown agent: %s\n' "$agent" >&2; usage >&2; exit 2 ;; esac
+
+if [ -n "${NO_COLOR:-}" ] || [ "${TERM:-}" = dumb ]; then color=false; fi
+if "$color"; then green=$'\033[32m'; yellow=$'\033[33m'; red=$'\033[31m'; reset=$'\033[0m'; else green=''; yellow=''; red=''; reset=''; fi
+
+failed=0
+agent_ready=0
+requested_agents=0
+
+pass() { printf '%sPASS%s  %s\n' "$green" "$reset" "$1"; }
+warn() { printf '%sWARN%s  %s\n' "$yellow" "$reset" "$1"; }
+fail() { printf '%sFAIL%s  %s\n' "$red" "$reset" "$1"; failed=1; }
+
+check_command() {
+  if command -v "$1" >/dev/null 2>&1; then
+    pass "$2"
+    return 0
+  fi
+  fail "$2 — $3"
+  return 1
+}
+
+printf 'Coding Agent Tutorial readiness\n\n'
+printf 'Project\n'
+if command -v node >/dev/null 2>&1; then
+  node_version=$(node --version 2>/dev/null || true)
+  node_major=${node_version#v}; node_major=${node_major%%.*}
+  if [ "${node_major:-0}" -ge 24 ] 2>/dev/null; then pass "Node.js $node_version"; else fail "Node.js 24+ required (found ${node_version:-unknown}) — use the dev container or install Node.js 24+"; fi
+else
+  fail 'Node.js 24+ required — use the dev container or install Node.js 24+'
+fi
+check_command npm "npm $(npm --version 2>/dev/null || true)" 'install Node.js 24+ (npm is included)' || true
+check_command git 'git' 'install git' || true
+if [ -d "$root/node_modules" ] && (cd "$root" && npm ls --depth=0 >/dev/null 2>&1); then
+  pass 'project dependencies installed'
+else
+  fail 'project dependencies missing or incomplete — run: npm install'
+fi
+
+if "$require_openrouter"; then
+  openrouter_key=${OPENROUTER_API_KEY:-}
+  if [ -z "$openrouter_key" ] && [ -f "$root/.env" ]; then
+    openrouter_key=$(sed -n 's/^OPENROUTER_API_KEY=//p' "$root/.env" | head -n 1)
+  fi
+  if [ -n "$openrouter_key" ] && [ "$openrouter_key" != your-key ]; then
+    pass 'tutorial application: OPENROUTER_API_KEY configured'
+  else
+    fail "tutorial application: OPENROUTER_API_KEY missing — run ./setup in your terminal (see \"Don't have an API key yet?\" in README.md)"
+  fi
+fi
+
+config_value() {
+  # Prints one non-secret configuration value, if the CLI exposes it.
+  "$@" 2>/dev/null | head -n 1 || true
+}
+
+check_pi() {
+  requested_agents=$((requested_agents + 1))
+  if ! command -v pi >/dev/null 2>&1; then fail 'Pi not installed — rebuild the dev container'; return; fi
+  pass "Pi installed ($(pi --version 2>/dev/null | head -n 1))"
+  if [ -s "${HOME}/.pi/agent/auth.json" ]; then
+    pass 'Pi provider authentication configured (credentials not displayed)'
+    agent_ready=$((agent_ready + 1))
+  else
+    fail 'Pi provider authentication missing — run pi, then /login'
+  fi
+  model=$(config_value pi config get model)
+  [ -n "$model" ] && pass "Pi model/default: $model" || warn 'Pi model/default is selected in Pi; no local default reported'
+}
+
+check_claude() {
+  requested_agents=$((requested_agents + 1))
+  if ! command -v claude >/dev/null 2>&1; then fail 'Claude Code not installed — rebuild the dev container'; return; fi
+  pass "Claude Code installed ($(claude --version 2>/dev/null | head -n 1))"
+  if claude auth status >/dev/null 2>&1; then
+    pass 'Claude Code provider authentication configured (credentials not displayed)'
+    agent_ready=$((agent_ready + 1))
+  else
+    fail 'Claude Code provider authentication missing — run: claude login'
+  fi
+  model=$(config_value claude config get model)
+  [ -n "$model" ] && pass "Claude Code model/default: $model" || warn 'Claude Code model/default is not locally configured'
+}
+
+check_codex() {
+  requested_agents=$((requested_agents + 1))
+  if ! command -v codex >/dev/null 2>&1; then fail 'Codex not installed — rebuild the dev container'; return; fi
+  pass "Codex installed ($(codex --version 2>/dev/null | head -n 1))"
+  if codex login status >/dev/null 2>&1; then
+    pass 'Codex provider authentication configured (credentials not displayed)'
+    agent_ready=$((agent_ready + 1))
+  else
+    fail 'Codex provider authentication missing — run: codex login'
+  fi
+  model=$(sed -n 's/^model[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "${HOME}/.codex/config.toml" 2>/dev/null | head -n 1)
+  [ -n "$model" ] && pass "Codex model/default: $model" || warn 'Codex model/default is not locally configured'
+}
+
+printf '\nCoaching harnesses\n'
+case "$agent" in
+  pi) check_pi ;;
+  claude) check_claude ;;
+  codex) check_codex ;;
+  all) check_pi; check_claude; check_codex ;;
+  none) pass 'agent checks deferred to setup --check' ;;
+esac
+
+if [ "$agent" = all ] && [ "$agent_ready" -eq 0 ]; then
+  fail 'no coaching harness is configured — authenticate Pi, Claude Code, or Codex'
+elif [ "$agent" != all ] && [ "$agent" != none ] && [ "$agent_ready" -eq 0 ]; then
+  fail "selected coaching harness ($agent) is not configured"
+fi
+
+if "$live"; then
+  if [ -z "${openrouter_key:-}" ] || [ "$openrouter_key" = your-key ]; then
+    fail '--live needs OPENROUTER_API_KEY; run ./setup first'
+  elif ! command -v curl >/dev/null 2>&1; then
+    fail '--live needs curl to contact OpenRouter'
+  else
+    model=${OPENROUTER_MODEL:-}
+    if [ -z "$model" ] && [ -f "$root/.env" ]; then
+      model=$(sed -n 's/^OPENROUTER_MODEL=//p' "$root/.env" | head -n 1)
+    fi
+    model=${model:-deepseek/deepseek-v4-flash}
+    if curl --silent --show-error --fail --max-time 30 \
+      --header "Authorization: Bearer $openrouter_key" \
+      --header 'Content-Type: application/json' \
+      --data "{\"model\":\"$model\",\"messages\":[{\"role\":\"user\",\"content\":\"Reply with OK.\"}],\"max_tokens\":1}" \
+      https://openrouter.ai/api/v1/chat/completions >/dev/null; then
+      pass "tutorial application live check succeeded ($model; one model request used)"
+    else
+      fail "tutorial application live check failed ($model) — check the key, model, network, and OpenRouter credit"
+    fi
+  fi
+fi
+
+if [ "$failed" -eq 0 ]; then
+  printf '\nPASS  Ready. Start your chosen harness and say: coach me\n'
+  exit 0
+fi
+printf '\nFAIL  Not ready. Follow the remediation above, then run bin/doctor again.\n'
+exit 1
