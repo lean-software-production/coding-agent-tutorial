@@ -6,6 +6,11 @@
     "ghcr.io/lean-software-production/devcontainer-features/claude-code:1": {},
     "ghcr.io/lean-software-production/devcontainer-features/codex:1": {}
   },
+  "customizations": {
+    "vscode": {
+      "extensions": ["openai.chatgpt"]
+    }
+  },
   "remoteUser": "node",
   "postCreateCommand": "npm install --silent"
 }

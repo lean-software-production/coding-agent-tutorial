@@ -10,6 +10,10 @@ This repository includes a Dev Container with Node.js 24, npm, git, and three
 coaching harnesses: [Pi](https://github.com/earendil-works/pi), Claude Code,
 and Codex. No credentials are stored in the image or repository.
 
+The container also installs the optional [OpenAI Codex VS Code
+extension](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt)
+in its remote extension host.
+
 - In GitHub, choose **Code → Create codespace on main**.
 - Locally, open this folder in VS Code and choose **Dev Containers: Reopen in
   Container**.
