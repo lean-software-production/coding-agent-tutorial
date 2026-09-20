@@ -200,7 +200,7 @@ if "$live"; then
     if [ -z "$model" ] && [ -f "$root/.env" ]; then
       model=$(sed -n 's/^OPENROUTER_MODEL=//p' "$root/.env" | head -n 1)
     fi
-    model=${model:-deepseek/deepseek-v4-flash}
+    model=${model:-openai/gpt-5.6-luna}
     if curl --silent --show-error --fail --max-time 30 \
       --header "Authorization: Bearer $openrouter_key" \
       --header 'Content-Type: application/json' \

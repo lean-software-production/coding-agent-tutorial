@@ -3,7 +3,7 @@ import { input } from "@inquirer/prompts";
 import { OpenRouter } from "@openrouter/sdk";
 
 const client = new OpenRouter();
-const model = process.env.OPENROUTER_MODEL ?? "deepseek/deepseek-v4-flash"
+const model = process.env.OPENROUTER_MODEL ?? "openai/gpt-5.6-luna"
 
 const userMessage = await input({ message: chalk.cyan("You:") });
 

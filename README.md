@@ -58,10 +58,11 @@ Don't have Node.js yet? Install it from [nodejs.org](https://nodejs.org/en/downl
 Don't have a key yet?
 
 1. Go to [openrouter.ai](https://openrouter.ai/) and sign in (GitHub and Google sign-in are supported).
-2. Add credits at [openrouter.ai/credits](https://openrouter.ai/credits) — OpenRouter is usage-based, so you pay per token. The cheap default model (`deepseek/deepseek-v4-flash`) costs only a fraction of a cent for this tutorial.
+2. Add credits at [openrouter.ai/credits](https://openrouter.ai/credits) — OpenRouter is usage-based, so you pay per token.
 3. Create a key at [openrouter.ai/keys](https://openrouter.ai/keys) and copy it (you'll only see it once), then run `./setup` and paste it in.
 
-For a more capable model, change the model line in `.env`:
+The tutorial defaults to `openai/gpt-5.6-luna`. To use a different model, change
+the model line in `.env`:
 ```sh
 OPENROUTER_MODEL=anthropic/claude-sonnet-5
 ```
