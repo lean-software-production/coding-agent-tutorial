@@ -152,7 +152,7 @@ check_codex() {
     pass 'Codex authentication configured (credentials not displayed)'
     agent_ready=$((agent_ready + 1))
   else
-    agent_problem 'Codex authentication missing — run: codex login'
+    agent_problem 'Codex authentication missing — run: codex login --device-auth'
   fi
 }
 
@@ -162,15 +162,25 @@ case "$agent" in
   pi) check_pi ;;
   claude) check_claude ;;
   codex) check_codex ;;
-  all) check_pi; check_claude; check_codex ;;
+  all) check_codex; check_pi; check_claude ;;
 esac
 
-if [ "$agent" = all ] && ! "$agent_explicit" && [ "$agent_ready" -eq 0 ]; then
-  fail 'authenticate at least one coding harness, then run bin/setup again'
+if [ "$agent_ready" -eq 0 ]; then
+  if [ "$agent" = all ] && ! "$agent_explicit"; then
+    fail 'no coding harness is authenticated'
+  elif [ "$agent" = all ]; then
+    fail 'all selected coding harnesses must be configured'
+  else
+    fail "selected coding harness ($agent) is not configured"
+  fi
+  printf '      We recommend Codex as best suited to being a coach — install Codex, then run: codex login --device-auth\n'
 elif [ "$agent" = all ] && "$agent_explicit" && [ "$agent_ready" -ne "$requested_agents" ]; then
   fail 'all selected coding harnesses must be configured'
-elif [ "$agent" != all ] && [ "$agent_ready" -eq 0 ]; then
-  fail "selected coding harness ($agent) is not configured"
+fi
+
+if [ "$agent_ready" -eq 0 ]; then
+  printf '\nFAIL  Not ready. Follow the guidance above, then run bin/setup again.\n'
+  exit 1
 fi
 
 printf '\nProject\n'
@@ -265,7 +275,7 @@ if "$live"; then
 fi
 
 if [ "$failed" -eq 0 ]; then
-  printf '\nPASS  Ready. Start your coding harness and say: coach me\n'
+  printf '\nPASS  Ready.\n'
   exit 0
 fi
 printf '\nFAIL  Not ready. Follow the guidance above, then run bin/setup again.\n'

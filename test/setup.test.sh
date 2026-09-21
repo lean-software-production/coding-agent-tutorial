@@ -58,6 +58,21 @@ if grep -Eq 'test-key|not-a-real-secret' "$temp/default.out"; then
   exit 1
 fi
 
+# No authenticated harness stops setup before the OpenRouter API-key check and
+# recommends Codex as the tutorial coach.
+if PI_AUTH_STATE=stale CLAUDE_AUTH_STATE=missing CODEX_AUTH_STATE=missing \
+  run_setup --no-color >"$temp/no-harness.out" 2>&1; then
+  echo 'setup unexpectedly passed without an authenticated harness' >&2
+  exit 1
+fi
+grep -q 'Codex installed' "$temp/no-harness.out"
+grep -q 'no coding harness is authenticated' "$temp/no-harness.out"
+grep -q 'recommend Codex as best suited to being a coach' "$temp/no-harness.out"
+if grep -q 'OPENROUTER_API_KEY' "$temp/no-harness.out"; then
+  echo 'setup checked the API key before finding an authenticated harness' >&2
+  exit 1
+fi
+
 # Normal setup also succeeds without prompting when everything is configured.
 env PATH="$temp/bin:/usr/bin:/bin" HOME="$temp/home" SETUP_PROJECT_ROOT="$temp/project" OPENROUTER_API_KEY=test-key \
   "$root/bin/setup" --agent pi --no-color >"$temp/normal.out"

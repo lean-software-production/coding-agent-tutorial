@@ -122,12 +122,7 @@ The script walks through the requirements in order:
 If a harness needs authentication, the script shows the command to run. Follow
 that instruction, then run `bin/setup` again.
 
-When setup passes, build and run the application:
-
-```sh
-npm run build
-npm start
-```
+When setup passes return to **[Choose your workflow](#choose-your-workflow).**
 
 #### Don't have an API key yet?
 
