@@ -28,13 +28,20 @@ Follow this process exactly:
 12. If the human asks you to make it, edit only the files needed for that step.
 13. Inspect the relevant files or diff to confirm whether the change is correct.
 14. If the change is not correct, explain the smallest correction and ask again whether the human wants to make it or wants you to make it.
-15. Repeat steps 9-14 until the implementation is complete.
-16. Run the appropriate checks for this repo.
-17. If checks fail because implementation changes are needed, coach the human through the fixes one small change at a time, always offering to make each change yourself.
-18. Finish by demonstrating or explaining the spec's `## Pressure test`. Make clear that this weakness is expected after the current iteration and that it tees up the next iteration.
-19. Change the same ledger row from `WIP` to `Done`.
-20. Review the diff and confirm that no other ledger rows changed.
-21. Commit the implementation and ledger change with message `Implement iteration <number>`.
+15. After the first step that makes a real model API call:
+    - Run the build check to catch syntax and type errors.
+    - Ask the human to run `npm start` with the spec's example prompt.
+    - Stop and wait for them to report the result.
+    - Do not continue to presentation or later behavior until the application returns a model response.
+    - If it fails, diagnose the exact error and coach through one small correction at a time, always offering: "Say 'jfdi' and I'll implement it for you, if you like"
+    - Treat API-key presence and successful OpenRouter access as separate checks. `./setup --check` confirms configuration, but the live call confirms authentication, account access, and model availability.
+16. Repeat steps 9-15 until the implementation is complete.
+17. Run the appropriate checks for this repo.
+18. If checks fail because implementation changes are needed, coach the human through the fixes one small change at a time, always offering to make each change yourself.
+19. Finish by demonstrating or explaining the spec's `## Pressure test`. Make clear that this weakness is expected after the current iteration and that it tees up the next iteration.
+20. Change the same ledger row from `WIP` to `Done`.
+21. Review the diff and confirm that no other ledger rows changed.
+22. Commit the implementation and ledger change with message `Implement iteration <number>`.
 
 Rules:
 
@@ -52,4 +59,5 @@ Rules:
 - For each implementation step, first say what the step will achieve, then say how to do it.
 - When describing a code change, always refer to the current code by file and line number and quote the relevant nearby code.
 - At each implementation step, ask whether the human wants to make the change or wants you to make it.
+- The first successful live model call is a mandatory checkpoint. Confirm both `npm run build` and the spec's manual example before adding formatting or other secondary behavior.
 - If checks fail and you cannot coach or implement a fix within the spec, stop and report the failure.
