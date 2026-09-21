@@ -8,9 +8,12 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": ["openai.chatgpt"]
+      "extensions": ["openai.chatgpt"],
+      "settings": {
+        "workbench.sideBar.location": "left"
+      }
     }
   },
   "remoteUser": "node",
-  "postCreateCommand": "npm install --silent"
+  "postCreateCommand": ".devcontainer/configure-codex.sh && npm install --silent"
 }
