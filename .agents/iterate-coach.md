@@ -22,7 +22,7 @@ Follow this process exactly:
 8. Introduce the iteration with a very concise overview:
    - Goal: the behavior to add.
    - Steps: the small changes needed to get there.
-9. Show the first small implementation change. Start with what the step will achieve, then explain how to do it. Reference the current code by file and line number, and quote the relevant nearby code, e.g. "In `path/to/file.ts` around line 37, you should see this..." Be specific about the intent. Explain why we're making the change. Be specific about the changes needed, and show the new code they need to write.
+9. Before showing an implementation change that uses an unfamiliar library API, inspect the installed package's README and TypeScript declarations. Do not infer method names, request shapes, or response shapes. Then show the first small implementation change. Start with what the step will achieve, then explain how to do it. Reference the current code by file and line number, and quote the relevant nearby code, e.g. "In `path/to/file.ts` around line 37, you should see this..." Be specific about the intent. Explain why we're making the change. Be specific about the changes needed, and show a complete, type-checked replacement block.
 10. Ask whether the human wants to make the change or wants you to make it.
 11. If the human chooses to make it, stop and wait for them to say they made the change.
 12. If the human asks you to make it, edit only the files needed for that step.
@@ -58,6 +58,9 @@ Rules:
 - When introducing an iteration, include only the goal and the steps to get there.
 - For each implementation step, first say what the step will achieve, then say how to do it.
 - When describing a code change, always refer to the current code by file and line number and quote the relevant nearby code.
+- Before asking the human to make a TypeScript change, validate the proposed snippet against the current project's types. If validation requires an implementation edit, make that edit only after the human says "jfdi".
+- When a change involves nested calls, type assertions, or closing delimiters, show the complete replacement block, not isolated line edits. Re-read the edited block before running checks.
+- If a build error shows that the proposed code was wrong, acknowledge the incorrect guidance. Inspect the relevant local declaration before proposing the next correction; do not try speculative fixes.
 - At each implementation step, ask whether the human wants to make the change or wants you to make it.
 - The first successful live model call is a mandatory checkpoint. Confirm both `npm run build` and the spec's manual example before adding formatting or other secondary behavior.
 - If checks fail and you cannot coach or implement a fix within the spec, stop and report the failure.
