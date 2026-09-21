@@ -1,0 +1,272 @@
+#!/usr/bin/env bash
+# Set up and verify the tutorial, from coding harness to application API key.
+set -u
+
+root=${SETUP_PROJECT_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}
+agent=all
+agent_explicit=false
+check_only=false
+live=false
+color=true
+
+usage() {
+  cat <<'USAGE'
+Usage: bin/setup [--check] [--agent pi|claude|codex|all] [--live] [--no-color]
+
+Checks for an authenticated coding harness, prepares the project, and configures
+its OpenRouter API key. --check reports readiness without changing anything.
+--live sends one minimal request to the configured OpenRouter model, which uses
+the network and may consume model quota.
+USAGE
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --check) check_only=true; shift ;;
+    --agent)
+      if [ $# -lt 2 ]; then
+        printf 'FAIL  --agent needs pi, claude, codex, or all\n' >&2
+        exit 2
+      fi
+      agent=$2; agent_explicit=true; shift 2 ;;
+    --agent=*) agent=${1#*=}; agent_explicit=true; shift ;;
+    --live) live=true; shift ;;
+    --no-color) color=false; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'FAIL  Unknown option: %s\n' "$1" >&2; usage >&2; exit 2 ;;
+  esac
+done
+
+case "$agent" in
+  pi|claude|codex|all) ;;
+  *) printf 'FAIL  Unknown agent: %s\n' "$agent" >&2; usage >&2; exit 2 ;;
+esac
+
+if [ -n "${NO_COLOR:-}" ] || [ "${TERM:-}" = dumb ]; then color=false; fi
+if "$color"; then
+  green=$'\033[32m'; yellow=$'\033[33m'; red=$'\033[31m'; reset=$'\033[0m'
+else
+  green=''; yellow=''; red=''; reset=''
+fi
+
+failed=0
+agent_ready=0
+requested_agents=0
+node_ready=false
+npm_ready=false
+dependencies_ready=false
+
+pass() { printf '%sPASS%s  %s\n' "$green" "$reset" "$1"; }
+warn() { printf '%sWARN%s  %s\n' "$yellow" "$reset" "$1"; }
+fail() { printf '%sFAIL%s  %s\n' "$red" "$reset" "$1"; failed=1; }
+step() { printf '%sWAIT%s  %s\n' "$yellow" "$reset" "$1"; }
+agent_problem() {
+  if "$agent_explicit"; then fail "$1"; else warn "$1"; fi
+}
+
+check_pi() {
+  requested_agents=$((requested_agents + 1))
+  if ! command -v pi >/dev/null 2>&1; then
+    agent_problem 'Pi not installed — use the dev container or install Pi'
+    return
+  fi
+  pass "Pi installed ($(pi --version 2>/dev/null | head -n 1))"
+
+  pi_agent_dir=${PI_CODING_AGENT_DIR:-"${HOME:-}/.pi/agent"}
+  pi_providers=$(node -e '
+    const fs = require("fs");
+    const agentDir = process.argv[1];
+    const read = (name) => {
+      try { return JSON.parse(fs.readFileSync(`${agentDir}/${name}`, "utf8")); }
+      catch { return {}; }
+    };
+    const auth = read("auth.json");
+    const settings = read("settings.json");
+    const candidates = [];
+    const add = (provider) => {
+      if (typeof provider === "string" && provider) candidates.push(provider);
+    };
+    add(settings.defaultProvider);
+    if (typeof settings.defaultModel === "string" && settings.defaultModel.includes("/")) {
+      add(settings.defaultModel.split("/", 1)[0]);
+    }
+    if (auth && typeof auth === "object") {
+      for (const [provider, value] of Object.entries(auth)) {
+        if (provider !== "version" && value && typeof value === "object") add(provider);
+      }
+    }
+    for (const [variable, provider] of Object.entries({
+      ANTHROPIC_API_KEY: "anthropic",
+      OPENAI_API_KEY: "openai",
+      GEMINI_API_KEY: "google",
+      XAI_API_KEY: "xai",
+      OPENROUTER_API_KEY: "openrouter",
+    })) {
+      if (process.env[variable]) add(provider);
+    }
+    console.log([...new Set(candidates)].join("\n"));
+  ' "$pi_agent_dir" 2>/dev/null || true)
+
+  pi_configured=false
+  while IFS= read -r provider; do
+    [ -n "$provider" ] || continue
+    if pi auth check --provider "$provider" --json --no-refresh >/dev/null 2>&1; then
+      pass "Pi authentication configured for $provider (credentials not displayed)"
+      pi_configured=true
+      break
+    fi
+  done <<PROVIDERS
+$pi_providers
+PROVIDERS
+
+  if "$pi_configured"; then
+    agent_ready=$((agent_ready + 1))
+  else
+    agent_problem 'Pi authentication missing or invalid — run pi, then /login'
+  fi
+}
+
+check_claude() {
+  requested_agents=$((requested_agents + 1))
+  if ! command -v claude >/dev/null 2>&1; then
+    agent_problem 'Claude Code not installed — use the dev container or install Claude Code'
+    return
+  fi
+  pass "Claude Code installed ($(claude --version 2>/dev/null | head -n 1))"
+  if claude auth status >/dev/null 2>&1; then
+    pass 'Claude Code authentication configured (credentials not displayed)'
+    agent_ready=$((agent_ready + 1))
+  else
+    agent_problem 'Claude Code authentication missing — run: claude auth login'
+  fi
+}
+
+check_codex() {
+  requested_agents=$((requested_agents + 1))
+  if ! command -v codex >/dev/null 2>&1; then
+    agent_problem 'Codex not installed — use the dev container or install Codex'
+    return
+  fi
+  pass "Codex installed ($(codex --version 2>/dev/null | head -n 1))"
+  if codex login status >/dev/null 2>&1; then
+    pass 'Codex authentication configured (credentials not displayed)'
+    agent_ready=$((agent_ready + 1))
+  else
+    agent_problem 'Codex authentication missing — run: codex login'
+  fi
+}
+
+printf 'Coding Agent Tutorial setup\n\n'
+printf 'Coding harness\n'
+case "$agent" in
+  pi) check_pi ;;
+  claude) check_claude ;;
+  codex) check_codex ;;
+  all) check_pi; check_claude; check_codex ;;
+esac
+
+if [ "$agent" = all ] && ! "$agent_explicit" && [ "$agent_ready" -eq 0 ]; then
+  fail 'authenticate at least one coding harness, then run bin/setup again'
+elif [ "$agent" = all ] && "$agent_explicit" && [ "$agent_ready" -ne "$requested_agents" ]; then
+  fail 'all selected coding harnesses must be configured'
+elif [ "$agent" != all ] && [ "$agent_ready" -eq 0 ]; then
+  fail "selected coding harness ($agent) is not configured"
+fi
+
+printf '\nProject\n'
+if command -v node >/dev/null 2>&1; then
+  node_version=$(node --version 2>/dev/null || true)
+  node_major=${node_version#v}; node_major=${node_major%%.*}
+  if [ "${node_major:-0}" -ge 24 ] 2>/dev/null; then
+    pass "Node.js $node_version"
+    node_ready=true
+  else
+    fail "Node.js 24+ required (found ${node_version:-unknown}) — use the dev container or install Node.js 24+"
+  fi
+else
+  fail 'Node.js 24+ required — use the dev container or install Node.js 24+'
+fi
+
+if command -v npm >/dev/null 2>&1; then
+  pass "npm $(npm --version 2>/dev/null || true)"
+  npm_ready=true
+else
+  fail 'npm required — install Node.js 24+ (npm is included)'
+fi
+
+if command -v git >/dev/null 2>&1; then
+  pass 'git'
+else
+  fail 'git required — install it from https://git-scm.com'
+fi
+
+if "$npm_ready" && [ -d "$root/node_modules" ] && (cd "$root" && npm ls --depth=0 >/dev/null 2>&1); then
+  pass 'project dependencies installed'
+  dependencies_ready=true
+elif "$check_only"; then
+  fail 'project dependencies missing or incomplete — run bin/setup'
+elif "$node_ready" && "$npm_ready"; then
+  step 'installing project dependencies'
+  if (cd "$root" && npm install --silent); then
+    pass 'project dependencies installed'
+    dependencies_ready=true
+  else
+    fail 'could not install project dependencies — check the npm error above'
+  fi
+else
+  fail 'project dependencies need Node.js and npm before they can be installed'
+fi
+
+read_openrouter_key() {
+  openrouter_key=${OPENROUTER_API_KEY:-}
+  if [ -z "$openrouter_key" ] && [ -f "$root/.env" ]; then
+    openrouter_key=$(sed -n 's/^OPENROUTER_API_KEY=//p' "$root/.env" | head -n 1)
+  fi
+}
+
+printf '\nTutorial application\n'
+read_openrouter_key
+if [ -n "$openrouter_key" ] && [ "$openrouter_key" != your-key ]; then
+  pass 'OPENROUTER_API_KEY configured'
+elif "$check_only"; then
+  fail 'OPENROUTER_API_KEY missing — run bin/setup (see "Don’t have an API key yet?" in README.md)'
+elif "$dependencies_ready"; then
+  if (cd "$root" && npx tsx scripts/set-key.ts); then
+    read_openrouter_key
+    pass 'OPENROUTER_API_KEY configured'
+  else
+    fail 'OPENROUTER_API_KEY was not configured'
+  fi
+else
+  fail 'OPENROUTER_API_KEY setup needs the project dependencies installed first'
+fi
+
+if "$live"; then
+  if [ -z "$openrouter_key" ] || [ "$openrouter_key" = your-key ]; then
+    fail '--live needs OPENROUTER_API_KEY; run bin/setup first'
+  elif ! command -v curl >/dev/null 2>&1; then
+    fail '--live needs curl to contact OpenRouter'
+  else
+    model=${OPENROUTER_MODEL:-}
+    if [ -z "$model" ] && [ -f "$root/.env" ]; then
+      model=$(sed -n 's/^OPENROUTER_MODEL=//p' "$root/.env" | head -n 1)
+    fi
+    model=${model:-openai/gpt-5.6-luna}
+    if curl --silent --show-error --fail --max-time 30 \
+      --header "Authorization: Bearer $openrouter_key" \
+      --header 'Content-Type: application/json' \
+      --data "{\"model\":\"$model\",\"messages\":[{\"role\":\"user\",\"content\":\"Reply with OK.\"}],\"max_tokens\":1}" \
+      https://openrouter.ai/api/v1/chat/completions >/dev/null; then
+      pass "live model check succeeded ($model; one model request used)"
+    else
+      fail "live model check failed ($model) — check the key, model, network, and OpenRouter credit"
+    fi
+  fi
+fi
+
+if [ "$failed" -eq 0 ]; then
+  printf '\nPASS  Ready. Start your coding harness and say: coach me\n'
+  exit 0
+fi
+printf '\nFAIL  Not ready. Follow the guidance above, then run bin/setup again.\n'
+exit 1

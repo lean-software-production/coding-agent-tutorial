@@ -23,5 +23,9 @@ Follow Kent Beck's rules of simple design, in order:
 - When the user says "implement it" or asks for guided automatic implementation, read and follow `.agents/implement-it.md`.
 - When the user asks to "iterate fast" or to implement the next Todo spec iteration automatically, read and follow `.agents/iterate-fast.md`.
 - When the user says "coach me", asks to "iterate coach", or wants to be coached through the next Todo spec iteration, read and follow `.agents/iterate-coach.md`.
-  - Preflight: before coaching, run `./setup --check`. It checks for Node.js 24+, npm, git, installed dependencies, and a real `OPENROUTER_API_KEY` (in the environment or `.env`). If anything is `MISSING`, relay the fix it suggests (for the API key, point to the "Don't have an API key yet?" section of `README.md`) and ask the user to sort it out before continuing.
+  - Preflight: before coaching, run `bin/setup --check`. It checks for an authenticated coding harness, Node.js 24+, npm, git, installed dependencies, and a real `OPENROUTER_API_KEY` (in the environment or `.env`). If anything fails, relay the fix it suggests (for the API key, point to the "Don't have an API key yet?" section of `README.md`) and ask the user to sort it out before continuing.
 - When the user asks only to "iterate" and does not specify fast, coach, or implement-it, ask which workflow they want.
+
+## File editing workaround
+
+The sandbox wrapper may fail before commands run with `bwrap: No permissions to create a new namespace`. The built-in patch writer can create a file in this state, but it cannot reliably read and update an existing file. When this happens, run `apply_patch` through an approved shell command outside the sandbox. This supports creating, updating, and deleting files while keeping all changes patch-based and reviewable.

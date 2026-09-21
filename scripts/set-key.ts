@@ -1,5 +1,5 @@
 // Prompts for your OpenRouter API key, checks it works, and writes it into .env.
-// Called by ./setup
+// Called by bin/setup
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { password } from "@inquirer/prompts";
 import chalk from "chalk";

@@ -11,7 +11,7 @@ At every implementation step, offer to make the change yourself if the human wan
 
 Follow this process exactly:
 
-0. Run `./setup --check`. If anything is `MISSING`, stop, relay the fix it suggests (for the API key, point to the "Don't have an API key yet?" section of `README.md`), and ask the user to sort it out before continuing. The agent cannot run without these.
+0. Run `bin/setup --check`. If anything fails, stop, relay the fix it suggests (for the API key, point to the "Don't have an API key yet?" section of `README.md`), and ask the user to sort it out before continuing. The agent cannot run without these.
 1. Read `docs/iterations/README.md`.
 2. Find the first ledger row whose status is exactly `Todo`.
 3. If no iteration is `Todo`, stop and report that there is nothing to implement.
@@ -34,7 +34,7 @@ Follow this process exactly:
     - Stop and wait for them to report the result.
     - Do not continue to presentation or later behavior until the application returns a model response.
     - If it fails, diagnose the exact error and coach through one small correction at a time, always offering: "Say 'jfdi' and I'll implement it for you, if you like"
-    - Treat API-key presence and successful OpenRouter access as separate checks. `./setup --check` confirms configuration, but the live call confirms authentication, account access, and model availability.
+    - Treat API-key presence and successful OpenRouter access as separate checks. `bin/setup --check` confirms configuration, but the live call confirms authentication, account access, and model availability.
 16. Repeat steps 9-15 until the implementation is complete.
 17. Run the appropriate checks for this repo.
 18. If checks fail because implementation changes are needed, coach the human through the fixes one small change at a time, always offering to make each change yourself.
