@@ -81,6 +81,10 @@ Pick an environment, then run one setup command. It checks your coding harness
 first, prepares the project, and configures the OpenRouter API key used by the
 agent you will build.
 
+The OpenRouter key is only for the agent you build in this tutorial. Your
+coding harness (Pi, Claude Code, or Codex) signs in with its own account, as
+usual.
+
 ### Option 1: GitHub Codespaces
 
 In GitHub, choose **Code → Create codespace on main**. The repository's Dev
