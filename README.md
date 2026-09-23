@@ -3,6 +3,11 @@
 Coding agents can read files, edit code, run commands, and decide what to do
 next. They can seem complicated, but their core is surprisingly small.
 
+An agent is a model plus a **harness**: the code that wraps the LLM, sends it
+messages, runs the tools it asks for, and feeds the results back. Claude Code,
+Codex, and Pi are harnesses. The code you write in this tutorial is a harness
+too.
+
 In this tutorial, you'll build one from scratch. You'll begin with a single
 model request, turn it into an agent loop, add tools one at a time, and finish
 by giving your agent a real coding task.
@@ -85,6 +90,12 @@ The OpenRouter key is only for the agent you build in this tutorial. Your
 coding harness (Pi, Claude Code, or Codex) signs in with its own account, as
 usual.
 
+Why a second account? Providers sell subscriptions for using their own
+harnesses, but underneath, models are served over HTTP, even local ones. For
+learning, it is better to call that API directly so you can see every request
+and response your harness makes. OpenRouter puts many models behind one API,
+so you can try different models in the harness you build by changing one line.
+
 ### Option 1: GitHub Codespaces
 
 In GitHub, choose **Code → Create codespace on main**. The repository's Dev
@@ -133,7 +144,8 @@ When setup passes return to **[Choose your workflow](#choose-your-workflow).**
 1. Sign in at [openrouter.ai](https://openrouter.ai/). GitHub and Google sign-in
    are supported.
 2. Add credits at [openrouter.ai/credits](https://openrouter.ai/credits).
-   OpenRouter charges by usage.
+   OpenRouter charges by usage. For scale, having a coding agent build a
+   simple working game of Tetris costs about US$3.50.
 3. Create a key at [openrouter.ai/keys](https://openrouter.ai/keys) and copy it.
    You will only see it once. Run `bin/setup` and paste it when prompted.
 
