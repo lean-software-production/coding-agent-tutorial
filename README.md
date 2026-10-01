@@ -19,8 +19,8 @@ implement each iteration and explain what changed.
 
 1. **[Set up your environment](#set-up-your-environment).** Use GitHub
    Codespaces, a local VS Code with a Dev Container, or your existing Node.js environment.
-2. **[Choose your workflow](#choose-your-workflow).** Learn hands-on, use
-   guided autopilot, or move through an iteration quickly.
+2. **[Choose your workflow](#choose-your-workflow).** Learn hands-on,
+   or use guided autopilot.
 3. **[Follow the iterations](#follow-the-iterations).** Build your agent one
    capability at a time, from a single model call to file editing and command
    execution.
@@ -36,7 +36,6 @@ Start your existing coding agent (eg: Codex, Claude Code, Pi) in this folder to 
 |---|---|---|
 | `coach me` | The agent teaches one small step at a time and lets you choose who writes the code. | Learning by doing |
 | `implement it` | The agent implements one iteration, demonstrates it, and asks before continuing. | Guided autopilot |
-| `iterate fast` | The agent implements and commits the next iteration, then stops. | Moving quickly |
 
 Before you begin, make sure you have completed [set up your environment](#set-up-your-environment) by
 running `bin/setup`. It checks your coding harness and the separate
