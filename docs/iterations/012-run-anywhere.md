@@ -9,13 +9,14 @@ So far one folder has played two parts. The agent's home holds its `package.json
 ## Requirements
 
 - Build on 011. `npm start` still works.
-- Ask the human to name the command. Offer `my-agent` as the default, and check that `command -v <name>` prints nothing before using it.
 - Add `bin/agent.js`, and point the command at it with `bin` in `package.json`.
 - `bin/agent.js` starts with `#!/usr/bin/env node`, loads `.env` from the agent's home if there is one, then imports `src/index.ts`.
 - Never load a `.env` from the workspace.
 - Write `agent.log` in the agent's home.
 - The tools work on the folder the command was started in.
 - `npm link` installs the command.
+
+Before writing any code, the coach asks the human what to call the command: `my-agent` unless they want another name, as long as `command -v <name>` prints nothing. Nothing in the program asks.
 
 Node runs your TypeScript directly by removing the types, so `src/index.ts` cannot use features that need compiling, such as enums and parameter properties. `npm run build` reports them.
 
@@ -35,7 +36,7 @@ Tool: read_file(notes.txt)
 Assistant: You need to buy milk.
 ```
 
-There is no `agent.log` in `~/shopping`; the entry is in the agent's home. To remove the command later, run `npm unlink -g coding-agent-workshop`.
+There is no `agent.log` in `~/shopping`; the entry is in the agent's home. To remove or rename the command, first run `npm unlink -g coding-agent-workshop`.
 
 ## Pressure test
 
