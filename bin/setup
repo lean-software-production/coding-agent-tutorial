@@ -241,7 +241,7 @@ if [ -n "$openrouter_key" ] && [ "$openrouter_key" != your-key ]; then
 elif "$check_only"; then
   fail 'OPENROUTER_API_KEY missing — run bin/setup (see "Don’t have an API key yet?" in README.md)'
 elif "$dependencies_ready"; then
-  if (cd "$root" && npx tsx scripts/set-key.ts); then
+  if (cd "$root" && node scripts/set-key.ts); then
     read_openrouter_key
     pass 'OPENROUTER_API_KEY configured'
   else

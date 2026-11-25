@@ -7,7 +7,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "start": "tsx --env-file-if-exists=.env src/index.ts",
+    "start": "node --env-file-if-exists=.env src/index.ts",
     "build": "tsc --noEmit",
     "kata": "node --test 'kata/**/*.test.ts'",
     "test": "bash test/setup.test.sh"
@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.10",
-    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }
