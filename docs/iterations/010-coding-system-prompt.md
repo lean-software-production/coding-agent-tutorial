@@ -24,8 +24,8 @@ Run `npm start` and ask for a change, saying nothing about checking:
 You: Make the Assistant: label in src/index.ts blue.
 Tool: read_file(src/index.ts)
 Tool: edit_file(src/index.ts, chalk.green("Assistant:"), chalk.blue("Assistant:"))
-Tool: bash(npm test)
-Assistant: Done. The label is blue and the tests pass.
+Tool: bash(npm run build)
+Assistant: Done. The label is blue and the project still compiles.
 ```
 
 Nobody asked for the third trace. Run the same prompt against 009 and it is not there. Your own run will wander more than this one; the shape does not. Put the file back with `git checkout src/index.ts`.
