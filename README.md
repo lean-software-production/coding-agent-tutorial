@@ -97,7 +97,8 @@ Read kata/bowling/README.md and build the bowling scorer test-first, open frames
 
 ### The kata, part two
 
-After iteration 015, when your agent has your TDD skill:
+After iteration 015. Your agent needs the TDD skill from the 014 example, so
+check that it starts with `Skills: 1` or more:
 
 ```text
 Finish the bowling scorer in kata/bowling: add strikes and the tenth frame. Run npm run kata to check your work.
@@ -106,7 +107,7 @@ Finish the bowling scorer in kata/bowling: add strikes and the tenth frame. Run 
 Did it work differently this time? Then have a subagent check the tests:
 
 ```text
-Use a subagent to review the tests in kata/bowling/game.test.ts against the rules in kata/bowling/README.md. Ask it which rules no test would catch if they broke. Change nothing.
+Use a subagent to review the tests in kata/bowling against the rules in kata/bowling/README.md. Ask it which rules no test would catch if they broke. Change nothing.
 ```
 
 ---
