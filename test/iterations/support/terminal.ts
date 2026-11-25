@@ -3,6 +3,7 @@ import type { Readable } from "node:stream";
 import { stripVTControlCharacters } from "node:util";
 
 const CTRL_C = "\u0003";
+const PATIENCE_SECONDS = 20;
 
 // Types at the agent the way a person would: only when it is waiting at an empty "You:".
 export class Terminal {
@@ -10,11 +11,9 @@ export class Terminal {
   private reader = 0;
   private exit: { readonly code: number | null } | undefined;
   private readonly agent: ChildProcessWithoutNullStreams;
-  private readonly patienceMs: number;
 
-  constructor(agent: ChildProcessWithoutNullStreams, patienceMs: number) {
+  constructor(agent: ChildProcessWithoutNullStreams) {
     this.agent = agent;
-    this.patienceMs = patienceMs;
     this.listenTo(agent.stdout);
     this.listenTo(agent.stderr);
     agent.stdin.on("error", () => {});
@@ -33,7 +32,7 @@ export class Terminal {
 
   async leave(): Promise<number | null> {
     if (await this.waitForPrompt()) this.agent.stdin.write(CTRL_C);
-    await this.until(() => this.exit !== undefined);
+    await this.until("exit", () => this.exit !== undefined);
 
     return this.exit?.code ?? null;
   }
@@ -46,13 +45,14 @@ export class Terminal {
   // The echo of a typed prompt also contains "You:", so only an empty, waiting label counts.
   private async waitForPrompt(): Promise<boolean> {
     const waiting = () => /You:\s*$/.test(this.output.slice(this.reader));
-    await this.until(() => this.exit !== undefined || waiting());
+    await this.until("show an empty You: prompt", () => this.exit !== undefined || waiting());
 
-    return this.exit === undefined && waiting();
+    return this.exit === undefined;
   }
 
-  private async until(done: () => boolean): Promise<void> {
-    const deadline = Date.now() + this.patienceMs;
-    while (!done() && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 25));
+  private async until(event: string, happened: () => boolean): Promise<void> {
+    const deadline = Date.now() + PATIENCE_SECONDS * 1000;
+    while (!happened() && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 25));
+    if (!happened()) throw new Error(`The agent did not ${event} within ${PATIENCE_SECONDS} seconds:\n${this.output}`);
   }
 }

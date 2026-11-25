@@ -10,13 +10,11 @@ import { Terminal } from "./terminal.ts";
 
 const preload = pathToFileURL(path.join(import.meta.dirname, "preload.mjs")).href;
 const NOT_INHERITED = /^(OPENROUTER_.*|NODE_OPTIONS|NODE_TEST_CONTEXT|FORCE_COLOR|CI)$/;
-const PATIENCE_MS = 20_000;
 
 export type Scenario = {
   readonly replies: readonly Reply[];
   readonly prompts: readonly string[];
   readonly files?: Files;
-  readonly patienceMs?: number;
 };
 
 export type Outcome = {
@@ -36,7 +34,7 @@ export async function runAgent(t: TestContext, scenario: Scenario): Promise<Outc
   const agent = launch(sandbox, model.url);
   t.after(() => agent.kill("SIGKILL"));
 
-  const terminal = new Terminal(agent, scenario.patienceMs ?? PATIENCE_MS);
+  const terminal = new Terminal(agent);
   for (const prompt of scenario.prompts) await terminal.answer(prompt);
   const exitCode = await terminal.leave();
 
@@ -50,8 +48,8 @@ function launch({ project, userHome }: Sandbox, modelUrl: string): ChildProcessW
       ...inheritedEnvironment(),
       OPENROUTER_API_KEY: "test-key",
       OPENROUTER_MODEL: "fake/model",
-      HOME: userHome.root,
-      USERPROFILE: userHome.root,
+      HOME: userHome,
+      USERPROFILE: userHome,
       NODE_OPTIONS: `--import=${preload}`,
       FAKE_MODEL_URL: modelUrl,
       NO_COLOR: "1",
