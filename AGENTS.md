@@ -17,6 +17,7 @@ Follow Kent Beck's rules of simple design, in order:
 - When the program hits a limitation, say so in plain language. Silence or blank output leaves the learner debugging the tutorial instead of learning from it.
 - Do not add abstractions, validation, retries, configuration, or edge-case handling just because production code would need them.
 - Optimize for readable tutorial code over robustness.
+- End relative imports in `.ts`, as in `./skills.ts`. Node runs the source directly, so `./skills.js` builds but crashes.
 
 ## Iteration workflows
 
