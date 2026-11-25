@@ -13,8 +13,7 @@ The feeling of an interactive agent chat comes from a loop, but without memory o
 - After each assistant reply, ask for another prompt.
 - Send only the latest user prompt to the LLM.
 - Do not send previous prompts or replies.
-- Stop on Ctrl-C.
-- Exit cleanly on Ctrl-C, with a zero exit code and no stack trace.
+- Exit cleanly on Ctrl-C at the prompt, with a zero exit code and no stack trace.
 
 ## Example
 
