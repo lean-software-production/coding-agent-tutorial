@@ -17,7 +17,9 @@ A second tool is where dispatch appears. The model names the tool it wants; the 
 - Replace exactly one occurrence of `old_text` with `new_text`.
 - If `old_text` is not found, or is found more than once, return an error to the model as the tool result and leave the file alone.
 - Dispatch on the tool name; do not assume every call is `read_file`.
-- Print a trace before running each tool.
+- Answer a tool name you do not have with an error result that names it.
+- Start every error result with `Error:`.
+- Print a trace before running each tool: its name, with the argument values in parentheses.
 
 ## Example
 
