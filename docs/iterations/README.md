@@ -12,6 +12,7 @@
 | 008 | [Edit file tool](008-edit-file-tool.md) | Todo |
 | 009 | [Bash tool](009-bash-tool.md) | Todo |
 | 010 | [Coding system prompt](010-coding-system-prompt.md) | Todo |
+| 011 | [Command guard](011-command-guard.md) | Todo |
 
 ## Status
 
