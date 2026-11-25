@@ -14,7 +14,9 @@ export type Folder = {
 
 export type Sandbox = {
   readonly project: Folder;
+  readonly workspace: Folder;
   readonly userHome: string;
+  readonly linkedCommand: string;
   remove: () => Promise<void>;
 };
 
@@ -25,10 +27,14 @@ export async function aSandbox(): Promise<Sandbox> {
   await copyAgentInto(project.root);
   const userHome = path.join(root, "user-home");
   await mkdir(userHome);
+  const linkedCommand = path.join(root, "my-agent");
+  await symlink(path.join(project.root, "bin", "agent.js"), linkedCommand);
 
   return {
     project,
+    workspace: await aFolder(path.join(root, "workspace")),
     userHome,
+    linkedCommand,
     remove: () => rm(root, { recursive: true, force: true }),
   };
 }
@@ -44,7 +50,7 @@ async function aFolder(root: string): Promise<Folder> {
 }
 
 async function copyAgentInto(folder: string): Promise<void> {
-  for (const part of ["src", "package.json"]) {
+  for (const part of ["src", "bin", "package.json"]) {
     await cp(path.join(projectRoot, part), path.join(folder, part), { recursive: true });
   }
   await symlink(path.join(projectRoot, "node_modules"), path.join(folder, "node_modules"), "junction");

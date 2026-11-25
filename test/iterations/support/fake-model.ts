@@ -11,6 +11,7 @@ export type Message = {
 };
 
 export type ModelRequest = {
+  readonly apiKey: string | undefined;
   readonly model: string;
   readonly messages: readonly Message[];
   readonly tools?: readonly { readonly function: { readonly name: string } }[];
@@ -62,7 +63,7 @@ async function received(request: IncomingMessage): Promise<ModelRequest> {
   request.setEncoding("utf8");
   for await (const chunk of request) body += String(chunk);
 
-  return JSON.parse(body) as ModelRequest;
+  return { ...JSON.parse(body), apiKey: request.headers.authorization?.replace("Bearer ", "") };
 }
 
 // Running past the script is loud, but not a 5xx: the SDK would retry that.

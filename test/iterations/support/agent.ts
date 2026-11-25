@@ -15,6 +15,8 @@ export type Scenario = {
   readonly replies: readonly Reply[];
   readonly prompts: readonly string[];
   readonly files?: Files;
+  readonly workspace?: Files;
+  readonly environment?: NodeJS.ProcessEnv;
 };
 
 export type Outcome = {
@@ -22,6 +24,7 @@ export type Outcome = {
   readonly exitCode: number | null;
   readonly requests: readonly ModelRequest[];
   readonly project: Folder;
+  readonly workspace: Folder;
 };
 
 // Spawned rather than imported, so a test says nothing about how the agent is built.
@@ -31,19 +34,25 @@ export async function runAgent(t: TestContext, scenario: Scenario): Promise<Outc
   const model = await startFakeModel(scenario.replies);
   t.after(model.close);
   await sandbox.project.write(scenario.files ?? {});
-  const agent = launch(sandbox, model.url);
+  await sandbox.workspace.write(scenario.workspace ?? {});
+  const agent = launch(sandbox, model.url, scenario);
   t.after(() => agent.kill("SIGKILL"));
 
   const terminal = new Terminal(agent);
   for (const prompt of scenario.prompts) await terminal.answer(prompt);
   const exitCode = await terminal.leave();
 
-  return { output: terminal.output, exitCode, requests: model.requests, project: sandbox.project };
+  const { project, workspace } = sandbox;
+  return { output: terminal.output, exitCode, requests: model.requests, project, workspace };
 }
 
-function launch({ project, userHome }: Sandbox, modelUrl: string): ChildProcessWithoutNullStreams {
-  return spawn(process.execPath, ["--env-file-if-exists=.env", "src/index.ts"], {
-    cwd: project.root,
+function launch(sandbox: Sandbox, modelUrl: string, scenario: Scenario): ChildProcessWithoutNullStreams {
+  const { project, workspace, userHome, linkedCommand } = sandbox;
+  const linked = scenario.workspace !== undefined;
+  const args = linked ? [linkedCommand] : ["--env-file-if-exists=.env", "src/index.ts"];
+
+  return spawn(process.execPath, args, {
+    cwd: linked ? workspace.root : project.root,
     env: {
       ...inheritedEnvironment(),
       OPENROUTER_API_KEY: "test-key",
@@ -53,6 +62,7 @@ function launch({ project, userHome }: Sandbox, modelUrl: string): ChildProcessW
       NODE_OPTIONS: `--import=${preload}`,
       FAKE_MODEL_URL: modelUrl,
       NO_COLOR: "1",
+      ...scenario.environment,
     },
   });
 }
