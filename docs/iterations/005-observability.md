@@ -13,11 +13,12 @@ Tool calling can get complicated quickly, so a little logging helps us see what 
 - Append concise logs to `agent.log`.
 - Add `agent.log` to `.gitignore`.
 - Keep the logging code in `src/index.ts`.
-- Log a timestamp for each entry.
+- Start each entry with a timestamp, and use the log shape below.
 - Before each model request, log the message count and available tool names.
-- After each model response, log one of: `assistant text`, `tool_calls`, or `empty`.
+- After each model response, log one of `tool_calls`, `assistant text` or `empty`, and the prompt tokens it used.
 - For tool calls, log the tool names and arguments.
 - After each tool result, log the tool name, path, and result length.
+- If a model request fails, log `[llm] failed:` and the error message, then let the error stop the program.
 - Do not log full file contents.
 
 ## Example
@@ -34,9 +35,9 @@ Example log shape:
 
 ```text
 2026-07-08T12:00:00.000Z [llm] request: 4 messages, tools: read_file
-2026-07-08T12:00:01.000Z [llm] response: tool_calls: read_file(README.md)
+2026-07-08T12:00:01.000Z [llm] response: tool_calls: read_file(README.md), 512 prompt tokens
 2026-07-08T12:00:01.100Z [tool] read_file(README.md): 358 chars
-2026-07-08T12:00:02.000Z [llm] response: assistant text: 124 chars
+2026-07-08T12:00:02.000Z [llm] response: assistant text: 124 chars, 640 prompt tokens
 ```
 
 ## Pressure test
@@ -47,4 +48,4 @@ Run `npm start`, then try:
 You: Read package.json and tsconfig.json. Tell me the package name and TypeScript target.
 ```
 
-Inspect `agent.log`. The log can reveal that the model asked for multiple files, but the agent still handles at most one tool call. This explains why the next iteration runs one batch of tool calls.
+Inspect `agent.log`. The model asked for both files, in one response or one after the other, but there is only one `[tool]` line. The agent dropped a call the model needed, and now you can see it. This explains why the next iteration runs a whole batch of tool calls.
