@@ -24,6 +24,10 @@
 - WIP: in progress
 - Done: complete
 
+## Tests
+
+Each iteration's acceptance test is `test/iterations/<number>-*.test.ts`. Run `npm test -- <number>` before marking it `Done`, and never edit a test to make it pass.
+
 ## Spec structure
 
 Keep each spec short and consistent:
