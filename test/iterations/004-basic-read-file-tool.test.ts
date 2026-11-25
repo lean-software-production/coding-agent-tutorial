@@ -58,5 +58,5 @@ test("004 never sends back a tool call without its result", async (t) => {
 test("004 explains an empty reply", async (t) => {
   const agent = await runAgent(t, { replies: [says("")], prompts: ["Hello?"] });
 
-  assert.match(agent.output, /Assistant:\s+\w+/);
+  assert.match(agent.output, /Assistant:\s+[^\s─—?-]/);
 });

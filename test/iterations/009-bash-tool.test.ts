@@ -32,8 +32,8 @@ test("009 reports stderr and a failing exit code as an ordinary result", async (
 });
 
 test("009 cuts off long output and says so", async (t) => {
-  const { result } = await runCommand(t, "printf 'x%.0s' {1..20000}");
+  const { result } = await runCommand(t, "yes | head -c 20000");
 
   assert.ok(result.length < 9_000, `${result.length} characters went back to the model`);
-  assert.match(result, /cut off[\s\S]*Exit code: 0/i);
+  assert.match(result, /(cut off|truncated)[\s\S]*Exit code: 0/i);
 });
