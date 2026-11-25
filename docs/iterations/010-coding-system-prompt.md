@@ -21,11 +21,11 @@ Every iteration so far gave the agent something it could not do before. This one
 Run `npm start` and ask for a change, saying nothing about checking:
 
 ```text
-You: Rename the Tool: label in src/index.ts to Using:.
+You: Make the Assistant: label in src/index.ts blue.
 Tool: read_file(src/index.ts)
-Tool: edit_file(src/index.ts, `Tool: ${describe(call)}`, `Using: ${describe(call)}`)
-Tool: bash(npx tsc --noEmit)
-Assistant: Done. The label is now "Using:" and the project still compiles.
+Tool: edit_file(src/index.ts, chalk.green("Assistant:"), chalk.blue("Assistant:"))
+Tool: bash(npm test)
+Assistant: Done. The label is blue and the tests pass.
 ```
 
 Nobody asked for the third trace. Run the same prompt against 009 and it is not there. Your own run will wander more than this one; the shape does not. Put the file back with `git checkout src/index.ts`.

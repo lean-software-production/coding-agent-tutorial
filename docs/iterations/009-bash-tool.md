@@ -25,11 +25,11 @@ A shell closes the loop: the agent can now change a file and then check its own 
 Run `npm start`, then ask for the thing 008 could only half-do:
 
 ```text
-You: Rename the Tool: label in src/index.ts to Using:, and make sure it still compiles.
+You: Make the Assistant: label in src/index.ts blue, and make sure it still compiles.
 Tool: read_file(src/index.ts)
-Tool: edit_file(src/index.ts, `Tool: ${describe(call)}`, `Using: ${describe(call)}`)
+Tool: edit_file(src/index.ts, chalk.green("Assistant:"), chalk.blue("Assistant:"))
 Tool: bash(npx tsc --noEmit)
-Assistant: Done. The label is now "Using:" and the project compiles with no errors.
+Assistant: Done. The label is blue and the project compiles with no errors.
 ```
 
 The third trace is the one that makes the first two worth anything. Put the file back with `git checkout src/index.ts`.

@@ -38,7 +38,7 @@ The second tool call may happen only after the model has seen `package.json`.
 Run `npm start`, then try:
 
 ```text
-You: Rename the Tool: label in src/index.ts to Using:.
+You: Make the Assistant: label in src/index.ts blue.
 ```
 
 The agent reads the file and describes the change, but the only tool is `read_file`, so it has to ask you to make the edit yourself. It understands your code but cannot change it. This explains why the next iteration adds an editing tool.

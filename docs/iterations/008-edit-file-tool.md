@@ -45,7 +45,7 @@ Assistant: Done. The title in scratch-note.txt is now "new".
 Run `npm start`, then try:
 
 ```text
-You: Rename the Tool: label in src/index.ts to Using:, and make sure it still compiles.
+You: Make the Assistant: label in src/index.ts blue, and make sure it still compiles.
 ```
 
 The agent reads and edits the file, then tells you to run `npx tsc --noEmit` yourself, or claims it compiles without checking. It can change your code but cannot run anything, so nothing it does is ever verified. This explains why the next iteration adds a shell tool.
