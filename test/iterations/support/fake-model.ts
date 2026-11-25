@@ -7,6 +7,7 @@ export type Message = {
   readonly role: string;
   readonly content: string | null;
   readonly tool_call_id?: string;
+  readonly tool_calls?: readonly { readonly id: string }[];
 };
 
 export type ModelRequest = {
@@ -31,6 +32,13 @@ export const toolResultsIn = (request: ModelRequest | undefined): readonly Messa
 
 export const resultOf = (call: ToolCall, request: ModelRequest | undefined): string =>
   String(toolResultsIn(request).find((message) => message.tool_call_id === call.id)?.content);
+
+export function callsWithoutResults(request: ModelRequest | undefined): readonly string[] {
+  const answered = toolResultsIn(request).map((message) => message.tool_call_id);
+  const asked = (request?.messages ?? []).flatMap((message) => message.tool_calls ?? []).map((call) => call.id);
+
+  return asked.filter((id) => !answered.includes(id));
+}
 
 export async function startFakeModel(replies: readonly Reply[]): Promise<FakeModel> {
   const requests: ModelRequest[] = [];

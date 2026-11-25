@@ -15,7 +15,7 @@ When we make an API call to the model, we can offer it tools. The model may resp
 - Only read files inside this project.
 - Return read errors to the model as tool results.
 - Run at most one tool call per user prompt.
-- Ignore extra tool calls for that prompt.
+- Ignore extra tool calls for that prompt, and leave them out of the history: the API rejects a tool call that has no result.
 - Print a trace before running the tool.
 - If the model replies with nothing, explain why instead of printing a blank reply.
 
@@ -39,4 +39,4 @@ Run `npm start`, then try:
 You: Read package.json and tsconfig.json. Tell me the package name and TypeScript target.
 ```
 
-You should see at most one `Tool:` line. Without logs, it is unclear whether the model asked for both files and the program ignored one, or whether the model only asked for one. This explains why the next iteration adds observability.
+You should see exactly one `Tool:` line. What comes after it varies: the model may answer half the question, guess the other half, or ask for the second file and get your "replied with nothing" message. Nothing on screen says whether it asked for both files and the program ignored one, or only ever asked for one. This explains why the next iteration adds observability.
