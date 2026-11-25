@@ -13,7 +13,7 @@ Follow this process exactly:
 6. Check the working tree and avoid touching unrelated user changes.
 7. Change only that ledger row from `Todo` to `WIP` without committing it.
 8. Implement only that spec. Do not start any later iteration.
-9. Run the appropriate checks for this repo.
+9. Run `npm run build` and `npm test -- <number>`.
 10. Change the same ledger row from `WIP` to `Done`.
 11. Review the diff and confirm that no other ledger rows changed.
 12. Commit the implementation and ledger change with message `Implement iteration <number>`.
@@ -21,6 +21,7 @@ Follow this process exactly:
 Rules:
 
 - Do not start more than one iteration.
+- Never edit a test in `test/iterations`.
 - Do not make a separate commit for the `WIP` ledger change.
 - Do not commit unrelated existing changes.
 - Keep the implementation scoped to the spec.

@@ -14,11 +14,11 @@ Follow this process exactly:
 5. If the spec is unclear, stop and ask before editing.
 6. Check the working tree and avoid touching unrelated user changes.
 7. Check the current branch.
-8. If the current branch is `main`, offer to create and switch to a dated solution branch named `solution/YYYY-MM-DD` before editing. If that branch already exists, suggest `solution/YYYY-MM-DD-2`, then `solution/YYYY-MM-DD-3`, and so on.
+8. If the current branch is `main`, offer to create and switch to a dated solution branch named `my-agent/YYYY-MM-DD` before editing. If that branch already exists, suggest `my-agent/YYYY-MM-DD-2`, then `my-agent/YYYY-MM-DD-3`, and so on.
 9. If the human says yes, create and switch to the branch. If they say no, continue on the current branch.
 10. Change only that ledger row from `Todo` to `WIP` without committing it.
 11. Implement only that spec. Do not start any later iteration.
-12. Run the appropriate checks for this repo.
+12. Run `npm run build` and `npm test -- <number>`.
 13. If checks fail and you cannot fix them within the spec, stop and report the failure.
 14. Change the same ledger row from `WIP` to `Done`.
 15. Review the diff and confirm that no other ledger rows changed.
@@ -35,6 +35,7 @@ Follow this process exactly:
 Rules:
 
 - Implement one iteration per commit.
+- Never edit a test in `test/iterations`.
 - Offer a solution branch before editing on `main`; do not create a branch without the human confirming.
 - Pause after each iteration; do not automatically continue without the human confirming.
 - Do not make a separate commit for the `WIP` ledger change.

@@ -36,7 +36,7 @@ Follow this process exactly:
     - If it fails, diagnose the exact error and coach through one small correction at a time, always offering: "Say 'jfdi' and I'll implement it for you, if you like"
     - Treat API-key presence and successful OpenRouter access as separate checks. `bin/setup --check` confirms configuration, but the live call confirms authentication, account access, and model availability.
 16. Repeat steps 9-15 until the implementation is complete.
-17. Run the appropriate checks for this repo.
+17. Run `npm run build` and `npm test -- <number>`.
 18. If checks fail because implementation changes are needed, coach the human through the fixes one small change at a time, always offering to make each change yourself.
 19. Finish by demonstrating or explaining the spec's `## Pressure test`. Make clear that this weakness is expected after the current iteration and that it tees up the next iteration.
 20. Change the same ledger row from `WIP` to `Done`.
@@ -46,6 +46,7 @@ Follow this process exactly:
 Rules:
 
 - Do not start more than one iteration.
+- Never edit a test in `test/iterations`, and do not suggest it.
 - Do not make a separate commit for the `WIP` ledger change.
 - Do not edit implementation files unless the human asks you to. even then only implement the next baby step.
 - You may edit `docs/iterations/README.md` for ledger status updates.
