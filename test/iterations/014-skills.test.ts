@@ -14,7 +14,7 @@ const haiku = skill("haiku", "Use when asked for a poem.", "Count the syllables.
 test("014 tells the model which skills exist, and loads one when asked", async (t) => {
   const loadTdd = tool("skill", { name: "tdd" });
   const agent = await runAgent(t, {
-    files: { ".agents/skills/tdd/SKILL.md": tdd },
+    workspace: { ".agents/skills/tdd/SKILL.md": tdd },
     userHome: { ".agents/skills/haiku/SKILL.md": haiku },
     replies: [calls(loadTdd), says("Test first.")],
     prompts: ["Build it."],
@@ -22,8 +22,8 @@ test("014 tells the model which skills exist, and loads one when asked", async (
 
   const system = String(agent.requests[0]?.messages[0]?.content);
   assert.match(agent.output, /Skills: 2/);
-  assert.match(system, /tdd[^\n]*Use when writing code test-first\./);
-  assert.match(system, /haiku[^\n]*Use when asked for a poem\./);
+  assert.match(system, /tdd[\s\S]*Use when writing code test-first\./);
+  assert.match(system, /haiku[\s\S]*Use when asked for a poem\./);
   assert.doesNotMatch(system, /Write one failing test|Count the syllables/);
   assert.match(resultOf(loadTdd, agent.requests[1]), /Write one failing test\./);
 });
@@ -31,7 +31,7 @@ test("014 tells the model which skills exist, and loads one when asked", async (
 test("014 prefers a project skill to a personal one and says so", async (t) => {
   const loadTdd = tool("skill", { name: "tdd" });
   const agent = await runAgent(t, {
-    files: { ".agents/skills/tdd/SKILL.md": tdd },
+    workspace: { ".agents/skills/tdd/SKILL.md": tdd },
     userHome: { ".agents/skills/tdd/SKILL.md": skill("tdd", "Mine.", "My personal steps.") },
     replies: [calls(loadTdd), says("Test first.")],
     prompts: ["Build it."],
@@ -47,6 +47,7 @@ test("014 skips a malformed skill and says so", async (t) => {
     files: {
       ".agents/skills/plain/SKILL.md": "No frontmatter here.",
       ".agents/skills/unnamed/SKILL.md": "---\nname: unnamed\n---\n\nNo description.\n",
+      ".agents/skills/colon/SKILL.md": skill("colon", "Not valid: YAML", "Body."),
       ".agents/skills/tdd/SKILL.md": tdd,
     },
     replies: [says("Hello.")],
@@ -55,6 +56,7 @@ test("014 skips a malformed skill and says so", async (t) => {
 
   assert.match(agent.output, /Skipped [^\n]*plain/);
   assert.match(agent.output, /Skipped [^\n]*unnamed/);
+  assert.match(agent.output, /Skipped [^\n]*colon/);
   assert.match(agent.output, /Skills: 1/);
   assert.match(agent.output, /Assistant:\s+Hello\./);
 });
