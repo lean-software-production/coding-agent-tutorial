@@ -59,13 +59,14 @@ what the spec still wants: change the code, not the test.
 
 ### Catching up
 
-Each finished iteration is tagged on the `solution` branch. To jump to one,
-commit your own work, then take every file from its tag:
+Each finished iteration is tagged on the `solution` branch. To continue from
+one, commit your own work, then start a new branch at its tag. Your commits stay
+on the branch you were on:
 
 ```sh
 git add -A && git commit -m "My work so far"
 git fetch --tags
-git checkout iteration-004-basic-read-file-tool -- .
+git switch -c from-004 iteration-004-basic-read-file-tool
 ```
 
 To read what an iteration changed, compare neighbours:
