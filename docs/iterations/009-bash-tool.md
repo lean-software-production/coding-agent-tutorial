@@ -14,7 +14,7 @@ A shell closes the loop: the agent can now change a file and then check its own 
 - Add a `bash` tool.
 - The tool takes a `command` string.
 - Run it with `bash -c` from the project root.
-- Return stdout and stderr together, followed by the exit code, as the tool result.
+- Return stdout, then stderr, then `Exit code: <n>`, as the tool result.
 - Treat a non-zero exit as a result to report, not a failure to handle.
 - Cut the output off after about 8000 characters and say so in the result.
 - Kill a command still running after 30 seconds and say so in the result.
