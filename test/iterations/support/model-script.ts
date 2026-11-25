@@ -11,7 +11,7 @@ export type ToolCallReply = { readonly calls: readonly ToolCall[] };
 export type FailureReply = { readonly status: number; readonly error: string };
 export type Reply = SpokenReply | ToolCallReply | FailureReply;
 
-export const PROMPT_TOKENS = 1234;
+const PROMPT_TOKENS = 1234;
 
 let toolCallsScripted = 0;
 
