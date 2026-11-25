@@ -41,10 +41,10 @@ Start your agent and ask for some code, without mentioning the skill:
 
 ```text
 Skills: 1
-You: Write isLeapYear(year) in scratch/leap.ts. Run its tests with: node --test scratch/
+You: Write isLeapYear(year) in scratch/leap.ts. Run its tests with: node --test 'scratch/*.test.ts'
 Tool: skill(tdd)
 Tool: bash(cat > scratch/leap.test.ts ...)
-Tool: bash(node --test scratch/)
+Tool: bash(node --test 'scratch/*.test.ts')
 ```
 
 Your `Skills:` count includes any in `~/.agents/skills`. Ask it for the capital of France and there is no `skill` call. Delete `scratch` afterwards.
