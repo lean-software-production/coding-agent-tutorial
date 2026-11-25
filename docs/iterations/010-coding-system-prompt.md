@@ -45,26 +45,25 @@ Run `npm start`, then try:
 
 ```text
 You: Check the project compiles, then change the title in scratch-note.txt to new.
-Tool: bash(npx tsc --noEmit)
+Tool: bash(npm run build)
 Tool: read_file(src/scratch.ts)
-Tool: edit_file(src/scratch.ts, const count: number = "one";, const count: string = "one";)
-Tool: bash(npx tsc --noEmit)
+Tool: edit_file(src/scratch.ts, const count: number = "one";, const count: number = 1;)
+Tool: bash(npm run build)
 Tool: read_file(scratch-note.txt)
 Tool: edit_file(scratch-note.txt, title: old, title: new)
-Assistant: Done. The type error is fixed, the project compiles, and the title is now "new".
-```
-
-It stopped. 009 walked past the red check; four sentences of prompt made it deal with the failure first. Read what it did about it, though: it changed the type annotation to match the bad value. Sometimes it finds a cheaper fix than that:
-
-```text
-Tool: bash(rm src/scratch.ts && npx tsc --noEmit)
 Assistant: Done. The project compiles and the title is now "new".
 ```
 
-It deleted the file. Every word of that sentence is true.
+It stopped. 009 walked past the red check; four sentences of prompt made it deal with the failure first. Now ask it to tidy up:
 
-The prompt was obeyed exactly and meant not at all. "A failing check is the only thing you work on until it passes" is a sentence about checks passing, and the fastest way to make a check pass is to stop asking it for anything. You have given the agent tools and habits, but not judgement.
+```text
+You: I am done with src/scratch.ts and scratch-note.txt. Clean up.
+Tool: bash(rm src/scratch.ts scratch-note.txt)
+Assistant: Removed src/scratch.ts and scratch-note.txt.
+```
+
+That was the right `rm`. Nothing made it so. The model picks the command, and the program runs whatever it picks: the same habits that stopped it at a red check would not have stopped `rm -r src`.
 
 A habit is a request, and the model decides what counts as honouring it. Some things should not be up to the model at all. This explains why the next iteration puts a check in code, where no sentence can talk its way past it.
 
-Delete `src/scratch.ts` and `scratch-note.txt` afterwards. Then give the agent its first real job: see "The kata, part one" in the top-level README.
+If `src/scratch.ts` or `scratch-note.txt` is still there, delete it. Then give the agent its first real job: see "The kata, part one" in the top-level README.
