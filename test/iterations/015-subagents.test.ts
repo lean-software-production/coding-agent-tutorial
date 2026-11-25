@@ -24,6 +24,7 @@ test("015 hands a task to a subagent and keeps only its answer", async (t) => {
   assert.match(agent.output, /Assistant:\s+Dig near the oak\./);
 
   assert.deepEqual(subagent?.messages.map((message) => message.role), ["system", "user"]);
+  assert.equal(subagent?.messages[0]?.content, main?.messages[0]?.content);
   assert.equal(subagent?.messages[1]?.content, "Find the treasure.");
   assert.ok(toolNamesIn(subagent).includes("read_file"));
   assert.ok(!toolNamesIn(subagent).includes("subagent"));
