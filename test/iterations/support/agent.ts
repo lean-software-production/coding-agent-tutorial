@@ -16,6 +16,7 @@ export type Scenario = {
   readonly prompts: readonly string[];
   readonly files?: Files;
   readonly workspace?: Files;
+  readonly userHome?: Files;
   readonly environment?: NodeJS.ProcessEnv;
 };
 
@@ -35,6 +36,7 @@ export async function runAgent(t: TestContext, scenario: Scenario): Promise<Outc
   t.after(model.close);
   await sandbox.project.write(scenario.files ?? {});
   await sandbox.workspace.write(scenario.workspace ?? {});
+  await sandbox.userHome.write(scenario.userHome ?? {});
   const agent = launch(sandbox, model.url, scenario);
   t.after(() => agent.kill("SIGKILL"));
 
@@ -57,8 +59,8 @@ function launch(sandbox: Sandbox, modelUrl: string, scenario: Scenario): ChildPr
       ...inheritedEnvironment(),
       OPENROUTER_API_KEY: "test-key",
       OPENROUTER_MODEL: "fake/model",
-      HOME: userHome,
-      USERPROFILE: userHome,
+      HOME: userHome.root,
+      USERPROFILE: userHome.root,
       NODE_OPTIONS: `--import=${preload}`,
       FAKE_MODEL_URL: modelUrl,
       NO_COLOR: "1",
