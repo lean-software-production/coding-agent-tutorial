@@ -8,9 +8,10 @@ import { calls, says, tool } from "./support/model-script.ts";
 // Harmless if the guard is missing: the sandbox is a throwaway copy and not a git repository.
 const FORBIDDEN = {
   "delete a file": tool("bash", { command: "rm victim.txt" }),
-  "push to git": tool("bash", { command: "git push" }),
+  "push to git": tool("bash", { command: "git push --dry-run" }),
   "print .env": tool("bash", { command: "cat .env" }),
   "read .env": tool("read_file", { path: ".env" }),
+  "read .env behind a spare argument": tool("read_file", { path: ".env", command: "ls" }),
   "edit .env": tool("edit_file", { path: ".env", old_text: "secret", new_text: "leaked" }),
 };
 
