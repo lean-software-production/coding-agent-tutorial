@@ -22,11 +22,10 @@ implement each iteration and explain what changed.
 2. **[Choose your workflow](#choose-your-workflow).** Learn hands-on,
    or use guided autopilot.
 3. **[Follow the iterations](#follow-the-iterations).** Build your agent one
-   capability at a time, from a single model call to file editing and command
-   execution.
-4. **[Put your agent to the test](#the-finale).** Give the finished agent a
-   test-driven coding exercise and see whether it follows the practices you
-   taught it.
+   capability at a time, from a single model call to skills and subagents.
+4. **[Put your agent to the test](#the-kata).** Give it a test-driven coding
+   exercise, half way and again at the end, and see whether it follows the
+   practices you taught it.
 
 ## Choose your workflow
 
@@ -43,39 +42,71 @@ OpenRouter API key used by the agent you build.
 
 ## Follow the iterations
 
-The tutorial is split into ten small iterations. Each adds one visible
+The tutorial is split into fifteen small iterations. Each adds one visible
 capability and ends with a pressure test that motivates the next step. Follow
 your chosen workflow while the agent works through the specs in the
 [`docs/iterations`](docs/iterations) ledger.
 
-By the final iteration, your agent can hold a conversation, call multiple
-tools, read and edit files, run commands, and follow a coding system prompt.
+By iteration 010 your agent can hold a conversation, call multiple tools, read
+and edit files, run commands, and follow a coding system prompt. The last five
+give it a command guard, let it run in any folder, and teach it project
+instructions, skills, and subagents.
 
-## The finale
+Every iteration has an acceptance test. `npm test` runs them up to the
+iteration you are on, and `npm test -- 004` stops after 004. They use a fake
+model, so they need no key and cost nothing. A test that fails is telling you
+what the spec still wants: change the code, not the test.
 
-Once every iteration is `Done`, find out whether your agent follows the coding
-practices you taught it. The rules are in
-[`kata/bowling/README.md`](kata/bowling/README.md).
+### Catching up
 
-Start your agent with `npm start` and give it this task:
+Each finished iteration is tagged on the `solution` branch. To jump to one,
+commit your own work, then take every file from its tag:
 
-```text
-Read kata/bowling/README.md and build the bowling scorer test-first.
-Run `npm run kata` to check your work.
+```sh
+git add -A && git commit -m "My work so far"
+git fetch --tags
+git checkout iteration-004-basic-read-file-tool -- .
 ```
 
-Your coding agent should follow the system prompt you
-wrote in iteration 010. `npm run kata` runs that folder alone with Node's
-built-in test runner, so nothing needs installing and a half-finished scorer
-never breaks anything else.
+To read what an iteration changed, compare neighbours:
 
-The folder holds one file; your agent has to make the rest. Watch for three
-ways it can go wrong: writing code before the test, making a failing test pass
-by editing the test, or saying it is done without running anything. When it
-does one of those, change the system prompt, not the code.
+```sh
+git diff iteration-003-stateful-agent-loop iteration-004-basic-read-file-tool
+```
 
-You are not expected to finish the whole kata. Three rules green, written
-test-first, means the exercise is working.
+## The kata
+
+Put your agent to work on the bowling kata. The rules are in
+[`kata/bowling/README.md`](kata/bowling/README.md). `npm run kata` runs that
+folder alone with Node's built-in test runner, so a half-finished scorer never
+breaks anything else.
+
+Watch for three ways it can go wrong: writing code before the test, making a
+failing test pass by editing the test, or saying it is done without running
+anything. When it does one of those, change the system prompt or the skill, not
+the code. You are not expected to finish the whole kata.
+
+### The kata, part one
+
+After iteration 010, start your agent with `npm start`:
+
+```text
+Read kata/bowling/README.md and build the bowling scorer test-first, open frames and spares only. Put it in kata/bowling. Run npm run kata to check your work.
+```
+
+### The kata, part two
+
+After iteration 015, when your agent has your TDD skill:
+
+```text
+Finish the bowling scorer in kata/bowling: add strikes and the tenth frame. Run npm run kata to check your work.
+```
+
+Did it work differently this time? Then have a subagent check the tests:
+
+```text
+Use a subagent to review the tests in kata/bowling/game.test.ts against the rules in kata/bowling/README.md. Ask it which rules no test would catch if they broke. Change nothing.
+```
 
 ---
 
