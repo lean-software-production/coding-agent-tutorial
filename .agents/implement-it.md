@@ -8,8 +8,8 @@ This is guided autopilot. Do the implementation yourself, but walk the human thr
 Follow this process exactly:
 
 1. Read `docs/iterations/README.md`.
-2. Find the first ledger row whose status is exactly `Todo`.
-3. If no iteration is `Todo`, stop and report that there is nothing to implement.
+2. Find the first ledger row whose status is `WIP`: someone stopped part-way, so look at what is already done and carry on from there. If there is none, take the first `Todo`.
+3. If no iteration is `WIP` or `Todo`, stop and report that there is nothing to implement.
 4. Read the spec linked from that row, including its `## Key concept`, `## Example`, and `## Pressure test` sections.
 5. If the spec is unclear, stop and ask before editing.
 6. Check the working tree and avoid touching unrelated user changes.
