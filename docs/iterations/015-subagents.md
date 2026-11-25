@@ -31,13 +31,13 @@ You: What is the capital of France?
 In `agent.log`, the subagent's conversation grew and the main one did not:
 
 ```text
-[llm] response: assistant text: 1334 chars, 6288 prompt tokens
-[tool] subagent(Read every spec file in docs/iterations ...): 1334 chars
-[llm] response: assistant text: 1352 chars, 1252 prompt tokens
-[llm] response: assistant text: 35 chars, 1561 prompt tokens
+[llm] response: assistant text: 1693 chars, 9464 prompt tokens
+[tool] subagent(Read every spec file in docs/iterations ...): 1693 chars
+[llm] response: assistant text: 1693 chars, 1334 prompt tokens
+[llm] response: assistant text: 35 chars, 1736 prompt tokens
 ```
 
-The question about France cost 6562 prompt tokens in 014. Now try three:
+The question about France cost 9834 prompt tokens in 014. Now try three:
 
 ```text
 You: Use three subagents, one each for src, test and docs, to summarize what is in them. Then combine their answers into one short overview.

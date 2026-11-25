@@ -61,8 +61,8 @@ You: What is the capital of France?
 Compare the prompt tokens in `agent.log`:
 
 ```text
-[llm] response: tool_calls: bash(find docs/iterations ...), 784 prompt tokens
-[llm] response: assistant text: 35 chars, 6562 prompt tokens
+[llm] response: tool_calls: bash(find docs/iterations ...), 800 prompt tokens
+[llm] response: assistant text: 6 chars, 9834 prompt tokens
 ```
 
 The summary was the only thing you wanted to keep, but every file it read is still in the conversation and goes back to the model with every request. This explains why the next iteration hands the reading to an agent that can forget it.
