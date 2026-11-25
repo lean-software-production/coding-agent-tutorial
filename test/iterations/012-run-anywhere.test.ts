@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 import { runAgent } from "./support/agent.ts";
@@ -19,22 +20,23 @@ test("012 works on the folder it was started in and logs in its own home", async
   await assert.rejects(agent.workspace.read("agent.log"));
 });
 
-test("012 takes its key from its own home, never from the workspace", async (t) => {
+test("012 loads .env from its own home, never from the workspace", async (t) => {
   const agent = await runAgent(t, {
     files: { ".env": "OPENROUTER_API_KEY=home-key" },
-    workspace: { ".env": "OPENROUTER_API_KEY=workspace-key" },
-    environment: { OPENROUTER_API_KEY: undefined },
+    workspace: { ".env": "OPENROUTER_API_KEY=workspace-key\nOPENROUTER_MODEL=workspace/model" },
+    environment: { OPENROUTER_API_KEY: undefined, OPENROUTER_MODEL: undefined },
     replies: [says("Hello.")],
     prompts: ["Hello?"],
   });
 
   assert.equal(agent.requests[0]?.apiKey, "home-key");
+  assert.notEqual(agent.requests[0]?.model, "workspace/model");
 });
 
-test("012 names its command in package.json", async (t) => {
-  const agent = await runAgent(t, { workspace: {}, replies: [], prompts: [] });
-  const { bin } = JSON.parse(await agent.project.read("package.json"));
+test("012 names a command that Node runs", async () => {
+  const project = new URL("../../", import.meta.url);
+  const { bin } = JSON.parse(await readFile(new URL("package.json", project), "utf8"));
+  const command = new URL(String(Object.values(bin ?? {})[0]), project);
 
-  assert.deepEqual(Object.values(bin), ["bin/agent.js"]);
-  assert.match(await agent.project.read("bin/agent.js"), /^#!\/usr\/bin\/env node\n/);
+  assert.match(await readFile(command, "utf8"), /^#!\/usr\/bin\/env node\n/);
 });
