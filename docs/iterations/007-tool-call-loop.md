@@ -17,8 +17,8 @@ To fulfill a prompt, the model might need to run a tool, examine the tool output
 - If the model asks for more tools, run the next batch.
 - Stop when the model returns a final answer.
 - Print one trace per tool call.
-- Limit each user prompt to 5 tool-call rounds.
-- If the limit is reached, print a short error.
+- Limit each user prompt to 25 tool-call rounds.
+- After the 25th round, make one final request that cannot call tools, and print its text.
 
 ## Example
 

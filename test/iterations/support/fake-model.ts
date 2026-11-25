@@ -27,6 +27,9 @@ export type FakeModel = {
 export const toolNamesIn = (request: ModelRequest | undefined): string[] =>
   (request?.tools ?? []).map((tool) => tool.function.name);
 
+export const canCallTools = (request: ModelRequest | undefined): boolean =>
+  toolNamesIn(request).length > 0 && request?.tool_choice !== "none";
+
 export const toolResultsIn = (request: ModelRequest | undefined): readonly Message[] =>
   (request?.messages ?? []).filter((message) => message.role === "tool");
 
