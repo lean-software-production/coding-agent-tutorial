@@ -16,7 +16,7 @@ When we make an API call to the model, we can offer it tools. The model may resp
 - Return read errors to the model as tool results.
 - Run at most one tool call per user prompt.
 - Ignore extra tool calls for that prompt, and leave them out of the history: the API rejects a tool call that has no result.
-- Print a trace before running the tool.
+- Print a trace before running the tool: its name, with the argument values in parentheses.
 - If the model replies with nothing, explain why instead of printing a blank reply.
 
 ## Example
