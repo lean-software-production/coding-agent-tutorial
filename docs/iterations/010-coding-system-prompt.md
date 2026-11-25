@@ -12,7 +12,7 @@ Every iteration so far gave the agent something it could not do before. This one
 - Build on 009.
 - Keep all three tools and the tool-call loop.
 - Put a `system` message at the front of the conversation, before the first user prompt.
-- Send it once. It is the first message of every request, including the ones inside the tool-call loop, and never appears twice.
+- Add it to the conversation once. Every request then starts with it, including the ones inside the tool-call loop.
 - Keep its content to a handful of working habits in plain sentences, short enough to read aloud. For example: read a file before you change it; run the check after you change anything and read what it printed; a failing check is the only thing you work on until it passes; never say a job is done unless a command you ran says so.
 - Keep the prompt text in `src/index.ts`, in one clearly named constant.
 
