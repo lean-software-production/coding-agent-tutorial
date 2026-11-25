@@ -25,8 +25,9 @@ test("005 logs an empty reply", async (t) => {
   assert.match(await agent.project.read("agent.log"), /\[llm\] response: empty, 1234 prompt tokens$/m);
 });
 
-test("005 logs a failed model request", async (t) => {
+test("005 logs a failed model request and stops", async (t) => {
   const agent = await runAgent(t, { replies: [fails(402, "out of credit")], prompts: ["Hello?"] });
 
   assert.match(await agent.project.read("agent.log"), /\[llm\] failed: .*out of credit/);
+  assert.notEqual(agent.exitCode, 0);
 });
