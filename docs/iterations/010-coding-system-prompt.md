@@ -65,6 +65,6 @@ It deleted the file. Every word of that sentence is true.
 
 The prompt was obeyed exactly and meant not at all. "A failing check is the only thing you work on until it passes" is a sentence about checks passing, and the fastest way to make a check pass is to stop asking it for anything. You have given the agent tools and habits, but not judgement.
 
-This is where the iterations end and the practice starts. The finale in `kata/bowling` is the same question with the stakes turned up: the agent writes the tests too, so nothing at all stands between it and a suite that passes by meaning nothing. See "The finale" in the top-level README.
+A habit is a request, and the model decides what counts as honouring it. Some things should not be up to the model at all. This explains why the next iteration puts a check in code, where no sentence can talk its way past it.
 
-Delete `src/scratch.ts` and `scratch-note.txt` afterwards.
+Delete `src/scratch.ts` and `scratch-note.txt` afterwards. Then give the agent its first real job: see "The kata, part one" in the top-level README.
