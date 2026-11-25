@@ -27,7 +27,8 @@ export async function aSandbox(): Promise<Sandbox> {
   await copyAgentInto(project.root);
   const userHome = path.join(root, "user-home");
   await mkdir(userHome);
-  const linkedCommand = path.join(root, "my-agent");
+  const links = await aFolder(path.join(root, "links"));
+  const linkedCommand = path.join(links.root, "my-agent");
   await symlink(path.join(project.root, "bin", "agent.js"), linkedCommand);
 
   return {
