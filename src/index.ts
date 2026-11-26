@@ -12,6 +12,8 @@ marked.use(markedTerminal());
 const client = new OpenRouter();
 const model = process.env.OPENROUTER_MODEL ?? "openai/gpt-6-luna"
 
+const MAX_ROUNDS = 25;
+
 const tools: ChatFunctionToolFunction[] = [
   {
     type: "function",
@@ -34,7 +36,7 @@ while (true) {
   messages.push({ role: "user", content: userMessage });
 
   let reply = await askModel();
-  if (reply.toolCalls?.length) {
+  for (let round = 1; reply.toolCalls?.length && round <= MAX_ROUNDS; round++) {
     messages.push(reply);
     for (const call of reply.toolCalls) {
       const args = JSON.parse(call.function.arguments);
@@ -43,10 +45,10 @@ while (true) {
       await log(`[tool] ${describe(call)}: ${result.length} chars`);
       messages.push({ role: "tool", toolCallId: call.id, content: result });
     }
-    reply = await askModel();
+    reply = await askModel(round < MAX_ROUNDS ? "auto" : "none");
   }
 
-  const answer = String(reply.content || "The model replied with nothing. It may want another tool, but gets one batch per prompt.");
+  const answer = String(reply.content || "The model replied with nothing.");
   messages.push({ role: "assistant", content: answer });
 
   console.log(chalk.green("Assistant:"));
@@ -54,9 +56,9 @@ while (true) {
   console.log(chalk.dim("─".repeat(40)));
 }
 
-async function askModel() {
+async function askModel(toolChoice: "auto" | "none" = "auto") {
   await log(`[llm] request: ${messages.length} messages, tools: ${tools.map((tool) => tool.function.name).join(", ")}`);
-  const response = await client.chat.send({ chatRequest: { model, messages, tools } }).catch(logFailure);
+  const response = await client.chat.send({ chatRequest: { model, messages, tools, toolChoice } }).catch(logFailure);
   const reply = response.choices[0].message;
   await log(`[llm] response: ${summarize(reply)}, ${response.usage?.promptTokens} prompt tokens`);
 
