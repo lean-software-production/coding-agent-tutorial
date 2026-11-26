@@ -16,7 +16,7 @@
 | 012 | [Command guard](012-command-guard.md) | Done |
 | 013 | [Project instructions](013-project-instructions.md) | Done |
 | 014 | [Skills](014-skills.md) | Done |
-| 015 | [Subagents](015-subagents.md) | Todo |
+| 015 | [Subagents](015-subagents.md) | Done |
 
 ## Status
 
