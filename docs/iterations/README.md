@@ -9,7 +9,7 @@
 | 005 | [Observability](005-observability.md) | Done |
 | 006 | [Multiple tool calls](006-multiple-tool-calls.md) | Done |
 | 007 | [Tool call loop](007-tool-call-loop.md) | Done |
-| 008 | [Edit file tool](008-edit-file-tool.md) | Todo |
+| 008 | [Edit file tool](008-edit-file-tool.md) | Done |
 | 009 | [Bash tool](009-bash-tool.md) | Todo |
 | 010 | [Coding system prompt](010-coding-system-prompt.md) | Todo |
 | 011 | [Run anywhere](011-run-anywhere.md) | Todo |
