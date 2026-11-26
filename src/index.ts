@@ -60,7 +60,12 @@ const tools: ChatFunctionToolFunction[] = [
   },
 ];
 
-const messages: ChatMessages[] = [];
+const SYSTEM_PROMPT = `Read a file before you change it.
+After you change anything, run the check and read what it printed.
+A failing check is the only thing you work on until it passes.
+Never say a job is done unless a command you ran says so.`;
+
+const messages: ChatMessages[] = [{ role: "system", content: SYSTEM_PROMPT }];
 
 while (true) {
   const userMessage = await input({ message: chalk.cyan("You:") }).catch(() => process.exit());
