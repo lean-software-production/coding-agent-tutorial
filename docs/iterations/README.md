@@ -10,7 +10,7 @@
 | 006 | [Multiple tool calls](006-multiple-tool-calls.md) | Done |
 | 007 | [Tool call loop](007-tool-call-loop.md) | Done |
 | 008 | [Edit file tool](008-edit-file-tool.md) | Done |
-| 009 | [Bash tool](009-bash-tool.md) | Todo |
+| 009 | [Bash tool](009-bash-tool.md) | Done |
 | 010 | [Coding system prompt](010-coding-system-prompt.md) | Todo |
 | 011 | [Run anywhere](011-run-anywhere.md) | Todo |
 | 012 | [Command guard](012-command-guard.md) | Todo |

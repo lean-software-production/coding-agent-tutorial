@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { appendFile, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import chalk from "chalk";
@@ -13,6 +14,8 @@ const client = new OpenRouter();
 const model = process.env.OPENROUTER_MODEL ?? "openai/gpt-6-luna"
 
 const MAX_ROUNDS = 25;
+const MAX_OUTPUT = 8000;
+const MAX_SECONDS = 30;
 
 const tools: ChatFunctionToolFunction[] = [
   {
@@ -40,6 +43,18 @@ const tools: ChatFunctionToolFunction[] = [
           new_text: { type: "string", description: "Text to put in its place" },
         },
         required: ["path", "old_text", "new_text"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "bash",
+      description: "Run a command from the project root.",
+      parameters: {
+        type: "object",
+        properties: { command: { type: "string", description: "Command to run with bash -c" } },
+        required: ["command"],
       },
     },
   },
@@ -107,6 +122,8 @@ async function runTool(call: ChatToolCall): Promise<string> {
       return readProjectFile(args.path);
     case "edit_file":
       return editProjectFile(args.path, args.old_text, args.new_text);
+    case "bash":
+      return runCommand(args.command);
     default:
       throw new Error(`there is no tool called ${call.function.name}.`);
   }
@@ -123,6 +140,19 @@ async function editProjectFile(relativePath: string, oldText: string, newText: s
 
   await writeFile(file, around.join(newText));
   return `Edited ${relativePath}.`;
+}
+
+function runCommand(command: string) {
+  const { stdout, stderr, status } = spawnSync("bash", ["-c", command], {
+    encoding: "utf8",
+    timeout: MAX_SECONDS * 1000,
+    maxBuffer: Infinity,
+  });
+  const output = stdout + stderr;
+  const shown = output.length > MAX_OUTPUT ? `${output.slice(0, MAX_OUTPUT)}\n(cut off)` : output;
+  const ending = status === null ? `Killed after ${MAX_SECONDS} seconds.` : `Exit code: ${status}`;
+
+  return `${shown}\n${ending}`;
 }
 
 function insideProject(relativePath: string) {
