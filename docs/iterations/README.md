@@ -13,7 +13,7 @@
 | 009 | [Bash tool](009-bash-tool.md) | Done |
 | 010 | [Coding system prompt](010-coding-system-prompt.md) | Done |
 | 011 | [Run anywhere](011-run-anywhere.md) | Done |
-| 012 | [Command guard](012-command-guard.md) | Todo |
+| 012 | [Command guard](012-command-guard.md) | Done |
 | 013 | [Project instructions](013-project-instructions.md) | Todo |
 | 014 | [Skills](014-skills.md) | Todo |
 | 015 | [Subagents](015-subagents.md) | Todo |

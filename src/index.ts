@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { appendFile, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import chalk from "chalk";
-import { input } from "@inquirer/prompts";
+import { confirm, input } from "@inquirer/prompts";
 import { OpenRouter } from "@openrouter/sdk";
 import type { ChatAssistantMessage, ChatFunctionToolFunction, ChatMessages, ChatToolCall } from "@openrouter/sdk/models";
 import { marked } from "marked";
@@ -14,6 +14,7 @@ const client = new OpenRouter();
 const model = process.env.OPENROUTER_MODEL ?? "openai/gpt-6-luna"
 
 const LOG_FILE = path.join(import.meta.dirname, "..", "agent.log");
+const SETTINGS_FILE = path.join(import.meta.dirname, "..", "settings.json");
 const MAX_ROUNDS = 25;
 const MAX_OUTPUT = 8000;
 const MAX_SECONDS = 30;
@@ -60,6 +61,15 @@ const tools: ChatFunctionToolFunction[] = [
     },
   },
 ];
+
+const RULES = [
+  { name: "delete", pattern: /\brm\b/ },
+  { name: "force-push", pattern: /\bgit push\b.*(--force|-f\b)/ },
+  { name: "secrets", pattern: /\.env\b/ },
+  { name: "settings", pattern: /settings\.json/ },
+];
+
+const settings: Record<string, string> = JSON.parse(await readFile(SETTINGS_FILE, "utf8").catch(() => "{}"));
 
 const SYSTEM_PROMPT = `Read a file before you change it.
 After you change anything, run the check and read what it printed.
@@ -121,8 +131,19 @@ function log(entry: string) {
   return appendFile(LOG_FILE, `${new Date().toISOString()} ${entry}\n`);
 }
 
+async function allowed(call: ChatToolCall, rule: string) {
+  const choice = settings[rule] ?? "ask";
+  if (choice === "ask") return confirm({ message: `Allow ${describe(call)}? (${rule})`, default: false }).catch(() => false);
+
+  return choice === "allow";
+}
+
 async function runTool(call: ChatToolCall): Promise<string> {
   const args = JSON.parse(call.function.arguments);
+  for (const rule of RULES.filter(({ pattern }) => pattern.test(`${args.command} ${args.path}`))) {
+    if (!(await allowed(call, rule.name))) return `Blocked: ${rule.name} was not allowed.`;
+  }
+
   switch (call.function.name) {
     case "read_file":
       return readProjectFile(args.path);
@@ -151,6 +172,7 @@ async function editProjectFile(relativePath: string, oldText: string, newText: s
 function runCommand(command: string) {
   const { stdout, stderr, status } = spawnSync("bash", ["-c", command], {
     encoding: "utf8",
+    env: { ...process.env, OPENROUTER_API_KEY: undefined },
     timeout: MAX_SECONDS * 1000,
     maxBuffer: Infinity,
   });
