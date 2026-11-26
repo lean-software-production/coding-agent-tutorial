@@ -3,7 +3,7 @@
 | Iteration | Spec | Status |
 |---|---|---|
 | 001 | [Single turn](001-single-turn.md) | Done |
-| 002 | [Stateless agent loop](002-stateless-agent-loop.md) | Todo |
+| 002 | [Stateless agent loop](002-stateless-agent-loop.md) | Done |
 | 003 | [Stateful agent loop](003-stateful-agent-loop.md) | Todo |
 | 004 | [Basic read file tool](004-basic-read-file-tool.md) | Todo |
 | 005 | [Observability](005-observability.md) | Todo |
