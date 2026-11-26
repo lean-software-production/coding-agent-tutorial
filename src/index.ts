@@ -13,6 +13,7 @@ marked.use(markedTerminal());
 const client = new OpenRouter();
 const model = process.env.OPENROUTER_MODEL ?? "openai/gpt-6-luna"
 
+const LOG_FILE = path.join(import.meta.dirname, "..", "agent.log");
 const MAX_ROUNDS = 25;
 const MAX_OUTPUT = 8000;
 const MAX_SECONDS = 30;
@@ -117,7 +118,7 @@ function describe(call: ChatToolCall) {
 }
 
 function log(entry: string) {
-  return appendFile("agent.log", `${new Date().toISOString()} ${entry}\n`);
+  return appendFile(LOG_FILE, `${new Date().toISOString()} ${entry}\n`);
 }
 
 async function runTool(call: ChatToolCall): Promise<string> {

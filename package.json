@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "my-agent": "bin/agent.js"
+  },
   "engines": {
     "node": ">=24"
   },
