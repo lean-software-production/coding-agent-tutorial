@@ -18,6 +18,8 @@ The model only ever asks. Your program decides what runs, so a rule in code hold
 - Never read settings from the workspace.
 - For `ask`, show the call and the rule's name and wait for yes or no, using `confirm` from `@inquirer/prompts` with no as the default.
 - `allow` runs the call without asking. `deny`, or a no, answers it with a result that starts `Blocked: ` and names the rule.
+- A call that matches several rules needs every one of them, so one allowed rule cannot hide a denied one.
+- Ctrl-C at the question counts as no.
 - A call that matches no rule runs as before.
 - Remove `OPENROUTER_API_KEY` from the environment of `bash` commands, whatever the settings say.
 
