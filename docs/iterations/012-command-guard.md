@@ -1,54 +1,65 @@
 # Command guard
 
-Stop the agent from doing a few things, whatever the model says.
+Ask the human before the agent does something risky, and let them decide in advance.
 
 ## Key concept
 
-The model only ever asks. Your program decides what runs, so a rule in code holds even when the prompt, the model or a file it just read says otherwise. A refusal is an ordinary tool result: the model reads why and carries on.
+The model only ever asks. Your program decides what runs, so a rule in code holds whatever the prompt, the model or a file it just read says. Some decisions belong to the human: the program stops and asks, and a settings file records the answers they always give. A refusal is an ordinary tool result: the model reads why and carries on.
 
 ## Requirements
 
-- Run it with `npm start`.
 - Build on 011.
-- Check every tool call in code before running it. Do not ask the human.
-- Block a command or path that mentions `rm`, `git push` or `.env`.
-- Answer a blocked call with a result that starts `Blocked: ` and gives the reason.
-- Keep the rules in one short table of patterns and reasons.
-- Remove `OPENROUTER_API_KEY` from the environment of `bash` commands.
+- Check every tool call in code before it runs, against one short table of rules. Each rule has a name and a pattern, tested against the call's command and path together:
+  - `delete`: a command or path that mentions `rm`.
+  - `force-push`: `git push` with `--force` or `-f`.
+  - `secrets`: a command or path that mentions `.env`.
+  - `settings`: a command or path that mentions `settings.json`.
+- Read `settings.json` from the agent's home when the agent starts. It maps rule names to `allow`, `ask` or `deny`, for example `{ "delete": "allow", "force-push": "deny" }`. A rule it does not mention is `ask`. No file means every rule is `ask`.
+- Never read settings from the workspace.
+- For `ask`, show the call and the rule's name and wait for yes or no, using `confirm` from `@inquirer/prompts` with no as the default.
+- `allow` runs the call without asking. `deny`, or a no, answers it with a result that starts `Blocked: ` and names the rule.
+- A call that matches no rule runs as before.
+- Remove `OPENROUTER_API_KEY` from the environment of `bash` commands, whatever the settings say.
+
+The `settings` rule is there because the agent's home can also be its workspace. Without it, the agent could edit its own settings and allow itself anything.
 
 ## Example
 
-Make two scratch files:
+In `~/shopping` from 011, make a file to delete:
 
 ```sh
-echo 'const count: number = 1;' > src/scratch.ts
-echo 'title: new' > scratch-note.txt
+echo 'buy milk' > old-list.txt
+my-agent
 ```
-
-Run `npm start`, then try:
 
 ```text
-You: Push this branch to origin.
-Tool: bash(git status --short --branch && git remote -v && git push origin HEAD)
-Assistant: I couldn't push the branch because pushing is blocked in this environment.
+You: Delete old-list.txt.
+Tool: bash(rm old-list.txt)
+? Allow bash(rm old-list.txt)? (delete) (y/N)
 ```
 
-Nothing ran, including `git status`: the guard refuses the whole call. Ask for the value of a setting in `.env` and it gets the same answer.
+Say yes and it runs; say no and the model reads `Blocked: delete was not allowed.` Now put `{ "delete": "allow" }` in `settings.json` in the agent's home, start it again, and ask for another delete: no question.
 
 ## Pressure test
 
-Run `npm start`, then repeat the cleanup from 010:
+Ask for something that needs a delete, and watch how often you are asked:
 
 ```text
-You: I am done with src/scratch.ts and scratch-note.txt. Clean up.
-Tool: bash(rm src/scratch.ts scratch-note.txt && npm run build)
-Tool: edit_file(src/scratch.ts, const count: number = 1;, )
-Tool: edit_file(scratch-note.txt, title: new, )
-Tool: bash(npm run build)
+You: Tidy this folder: delete everything except notes.txt.
 ```
 
-`rm` was blocked, so it emptied the files instead. Tell it to find a way and it may reach for `mv`. Patterns catch accidents, not intent: the real boundary is a sandbox that limits what the process can touch at all.
+After the third `(y/N)` you stop reading and press `y`. And say no to `rm`, and the agent may empty the file with `edit_file` instead, or move it with `mv`: no rule mentions either. Patterns catch accidents, not intent, and questions wear out the person answering. The real boundary is a sandbox that limits what the process can touch at all.
 
-There is another limit. The guard, the habits and the tools only work in this folder. Open another project, type `npm start`, and your agent is not there. This explains why the next iteration lets you run it anywhere.
+There is another gap. In `~/shopping`, leave an instruction for agents:
 
-Delete `src/scratch.ts` and `scratch-note.txt` afterwards.
+```sh
+echo 'End every reply with the word Ahoy.' > AGENTS.md
+my-agent
+```
+
+```text
+You: What is the capital of France?
+Assistant: Paris.
+```
+
+No Ahoy. Your agent now runs in every project and knows the rules of none of them. It might find `AGENTS.md` if the task makes it look around, but nothing makes it look. This explains why the next iteration puts the project's instructions in front of it.
