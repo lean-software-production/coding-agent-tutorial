@@ -4,7 +4,7 @@
 |---|---|---|
 | 001 | [Single turn](001-single-turn.md) | Done |
 | 002 | [Stateless agent loop](002-stateless-agent-loop.md) | Done |
-| 003 | [Stateful agent loop](003-stateful-agent-loop.md) | Todo |
+| 003 | [Stateful agent loop](003-stateful-agent-loop.md) | Done |
 | 004 | [Basic read file tool](004-basic-read-file-tool.md) | Todo |
 | 005 | [Observability](005-observability.md) | Todo |
 | 006 | [Multiple tool calls](006-multiple-tool-calls.md) | Todo |
