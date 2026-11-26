@@ -16,7 +16,7 @@ const FORBIDDEN = {
 };
 
 for (const [action, call] of Object.entries(FORBIDDEN)) {
-  test(`011 blocks an attempt to ${action}`, async (t) => {
+  test(`012 blocks an attempt to ${action}`, async (t) => {
     const agent = await runAgent(t, {
       files: { "victim.txt": "still here", ".env": "TOKEN=secret" },
       replies: [calls(call), says("I was blocked.")],
@@ -30,7 +30,7 @@ for (const [action, call] of Object.entries(FORBIDDEN)) {
   });
 }
 
-test("011 keeps the API key away from commands", async (t) => {
+test("012 keeps the API key away from commands", async (t) => {
   const printKey = tool("bash", { command: "echo key=$OPENROUTER_API_KEY" });
   const agent = await runAgent(t, { replies: [calls(printKey), says("No key.")], prompts: ["Print it."] });
 

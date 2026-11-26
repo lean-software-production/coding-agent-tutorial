@@ -49,7 +49,7 @@ your chosen workflow while the agent works through the specs in the
 
 By iteration 010 your agent can hold a conversation, call multiple tools, read
 and edit files, run commands, and follow a coding system prompt. The last five
-give it a command guard, let it run in any folder, and teach it project
+let it run in any folder, give it a command guard, and teach it project
 instructions, skills, and subagents.
 
 Every iteration has an acceptance test. `npm test` runs them up to the

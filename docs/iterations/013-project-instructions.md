@@ -17,7 +17,7 @@ A cloned project's `AGENTS.md` is someone else's text, now speaking with the aut
 
 ## Example
 
-In `~/shopping` from 012, run your agent again:
+In `~/shopping` from 011, run your agent again:
 
 ```text
 You: What is the capital of France?

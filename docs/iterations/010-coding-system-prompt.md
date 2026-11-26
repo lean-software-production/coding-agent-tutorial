@@ -64,6 +64,6 @@ Assistant: Removed src/scratch.ts and scratch-note.txt.
 
 That was the right `rm`. Nothing made it so. The model picks the command, and the program runs whatever it picks: the same habits that stopped it at a red check would not have stopped `rm -r src`.
 
-A habit is a request, and the model decides what counts as honouring it. Some things should not be up to the model at all. This explains why the next iteration puts a check in code, where no sentence can talk its way past it.
+A habit is a request, and the model decides what counts as honouring it. That matters more once the agent leaves this folder for your real projects, and so far it cannot: it only runs here. This explains why the next iteration lets you run it anywhere.
 
 If `src/scratch.ts` or `scratch-note.txt` is still there, delete it. Then give the agent its first real job: see "The kata, part one" in the top-level README.

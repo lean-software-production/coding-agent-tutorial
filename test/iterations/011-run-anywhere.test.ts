@@ -6,7 +6,7 @@ import { runAgent } from "./support/agent.ts";
 import { resultOf } from "./support/fake-model.ts";
 import { calls, says, tool } from "./support/model-script.ts";
 
-test("012 works on the folder it was started in and logs in its own home", async (t) => {
+test("011 works on the folder it was started in and logs in its own home", async (t) => {
   const readNotes = tool("read_file", { path: "notes.txt" });
   const agent = await runAgent(t, {
     workspace: { "notes.txt": "buy milk" },
@@ -20,7 +20,7 @@ test("012 works on the folder it was started in and logs in its own home", async
   await assert.rejects(agent.workspace.read("agent.log"));
 });
 
-test("012 loads .env from its own home, never from the workspace", async (t) => {
+test("011 loads .env from its own home, never from the workspace", async (t) => {
   const agent = await runAgent(t, {
     files: { ".env": "OPENROUTER_API_KEY=home-key" },
     workspace: { ".env": "OPENROUTER_API_KEY=workspace-key\nOPENROUTER_MODEL=workspace/model" },
@@ -33,7 +33,7 @@ test("012 loads .env from its own home, never from the workspace", async (t) => 
   assert.notEqual(agent.requests[0]?.model, "workspace/model");
 });
 
-test("012 names a command that Node runs", async () => {
+test("011 names a command that Node runs", async () => {
   const project = new URL("../../", import.meta.url);
   const { bin } = JSON.parse(await readFile(new URL("package.json", project), "utf8"));
   const command = new URL(String(Object.values(bin ?? {})[0]), project);

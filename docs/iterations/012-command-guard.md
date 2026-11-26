@@ -9,7 +9,7 @@ The model only ever asks. Your program decides what runs, so a rule in code hold
 ## Requirements
 
 - Run it with `npm start`.
-- Build on 010.
+- Build on 011.
 - Check every tool call in code before running it. Do not ask the human.
 - Block a command or path that mentions `rm`, `git push` or `.env`.
 - Answer a blocked call with a result that starts `Blocked: ` and gives the reason.

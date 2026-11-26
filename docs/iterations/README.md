@@ -12,8 +12,8 @@
 | 008 | [Edit file tool](008-edit-file-tool.md) | Todo |
 | 009 | [Bash tool](009-bash-tool.md) | Todo |
 | 010 | [Coding system prompt](010-coding-system-prompt.md) | Todo |
-| 011 | [Command guard](011-command-guard.md) | Todo |
-| 012 | [Run anywhere](012-run-anywhere.md) | Todo |
+| 011 | [Run anywhere](011-run-anywhere.md) | Todo |
+| 012 | [Command guard](012-command-guard.md) | Todo |
 | 013 | [Project instructions](013-project-instructions.md) | Todo |
 | 014 | [Skills](014-skills.md) | Todo |
 | 015 | [Subagents](015-subagents.md) | Todo |

@@ -8,7 +8,7 @@ So far one folder has played two parts. The agent's home holds its `package.json
 
 ## Requirements
 
-- Build on 011. `npm start` still works.
+- Build on 010. `npm start` still works.
 - Add `bin/agent.js`, and point the command at it with `bin` in `package.json`.
 - `bin/agent.js` starts with `#!/usr/bin/env node`, loads `.env` from the agent's home if there is one, then imports `src/index.ts`.
 - Never load a `.env` from the workspace.
@@ -40,16 +40,17 @@ There is no `agent.log` in `~/shopping`; the entry is in the agent's home. To re
 
 ## Pressure test
 
-In `~/shopping`, leave an instruction for agents:
+`~/shopping` is standing in for a real project, and real projects have secrets:
 
 ```sh
-echo 'End every reply with the word Ahoy.' > AGENTS.md
+echo 'API_TOKEN=not-a-real-secret' > .env
 my-agent
 ```
 
 ```text
-You: What is the capital of France?
-Assistant: Paris.
+You: What is in .env?
+Tool: read_file(.env)
+Assistant: API_TOKEN=not-a-real-secret
 ```
 
-No Ahoy. Your agent now runs in every project and knows the rules of none of them. It might find `AGENTS.md` if the task makes it look around, but nothing makes it look. This explains why the next iteration puts the project's instructions in front of it.
+Your agent now goes wherever you point it and does whatever the model picks there. It just sent your secret to the model provider, and it would run `rm` or `git push --force` in your real repository just as quietly. Nobody asked you. This explains why the next iteration lets you decide.
