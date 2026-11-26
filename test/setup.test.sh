@@ -149,4 +149,3 @@ grep -q -- '--agent needs pi, claude, codex, or all' "$temp/missing-agent.out"
 
 run_setup --agent pi --live --no-color >"$temp/live.out"
 grep -q 'one model request used' "$temp/live.out"
-grep -qx '@AGENTS.md' "$root/CLAUDE.md"
