@@ -374,7 +374,7 @@ bin/setup</pre>
         <h3>Fallen behind?</h3>
         <p>Say <b>“implement it”</b> and your agent builds the lesson. Or start a branch from a finished one; your commits stay where they are.</p>
         <pre>git add -A &amp;&amp; git commit -m "My work so far"
-git fetch --tags
+git fetch --tags --force
 git switch -c from-004 iteration-004-basic-read-file-tool</pre>
         <p>Every lesson is also one small diff:</p>
         <pre>git diff iteration-003-stateful-agent-loop \

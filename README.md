@@ -65,7 +65,7 @@ on the branch you were on:
 
 ```sh
 git add -A && git commit -m "My work so far"
-git fetch --tags
+git fetch --tags --force
 git switch -c from-004 iteration-004-basic-read-file-tool
 ```
 
