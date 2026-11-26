@@ -42,13 +42,23 @@ Say yes and it runs; say no and the model reads `Blocked: delete was not allowed
 
 ## Pressure test
 
-Ask for something that needs a delete, and watch how often you are asked:
+Make a few files, and ask for a bigger tidy-up:
+
+```sh
+for f in a b c d; do echo "$f" > "$f.txt"; done
+echo 'keep' > notes.txt
+```
 
 ```text
 You: Tidy this folder: delete everything except notes.txt.
+? Allow bash(find . -mindepth 1 -maxdepth 1 ! -name notes.txt -exec rm -rf -- {}
+ + && printf '%s\n' 'Remaining entries:' && find . -mindepth 1 -maxdepth 1 -prin
+tf '%f\n' | sort && test "$(find . -mindepth 1 -maxdepth 1 ! -name notes.txt -pr
+int -quit)" = "" && test -f notes.txt && echo 'Check passed: notes.txt is the on
+ly remaining entry.')? (delete) (y/N)
 ```
 
-After the third `(y/N)` you stop reading and press `y`. And say no to `rm`, and the agent may empty the file with `edit_file` instead, or move it with `mv`: no rule mentions either. Patterns catch accidents, not intent, and questions wear out the person answering. The real boundary is a sandbox that limits what the process can touch at all.
+Would you read all of that before pressing `y`? A question is only as good as the person answering it, and people stop reading. The rule only matched because the command happens to say `rm`: `find -delete`, `mv` or an `edit_file` that empties the file would not ask at all. Patterns catch accidents, not intent. The real boundary is a sandbox that limits what the process can touch at all.
 
 There is another gap. In `~/shopping`, leave an instruction for agents:
 
