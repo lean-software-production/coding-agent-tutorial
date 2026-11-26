@@ -341,10 +341,10 @@ bin/setup</pre>
       <tr><td class="n">7</td><td class="slug">tool-call-loop</td><td>keep going until it answers</td><td class="hurt">it understands but can't change</td></tr>
       <tr><td class="n">8</td><td class="slug">edit-file-tool</td><td>exact-match edits</td><td class="hurt">it can't check its own work</td></tr>
       <tr><td class="n">9</td><td class="slug">bash-tool</td><td>run commands, feed output back</td><td class="hurt">it sees a failure and carries on</td></tr>
-      <tr><td class="n">10</td><td class="slug">coding-system-prompt</td><td>working habits</td><td class="hurt">habits are only requests</td></tr>
+      <tr><td class="n">10</td><td class="slug">coding-system-prompt</td><td>working habits</td><td class="hurt">it only runs in this folder</td></tr>
       <tr class="finale"><td class="n">▶</td><td class="slug">kata, part one</td><td>open frames and spares</td><td class="hurt">then a break</td></tr>
-      <tr><td class="n">11</td><td class="slug">command-guard</td><td>rules in code, whatever the model says</td><td class="hurt">it only lives in this folder</td></tr>
-      <tr><td class="n">12</td><td class="slug">run-anywhere</td><td>your own command</td><td class="hurt">it knows no project's rules</td></tr>
+      <tr><td class="n">11</td><td class="slug">run-anywhere</td><td>your own command, in any folder</td><td class="hurt">it reads your secrets, and nobody asks you</td></tr>
+      <tr><td class="n">12</td><td class="slug">command-guard</td><td>ask, allow or deny the risky calls</td><td class="hurt">it knows no project's rules</td></tr>
       <tr><td class="n">13</td><td class="slug">project-instructions</td><td><code>AGENTS.md</code></td><td class="hurt">every request pays for all of them</td></tr>
       <tr><td class="n">14</td><td class="slug">skills</td><td>instructions loaded when needed</td><td class="hurt">everything it reads stays forever</td></tr>
       <tr><td class="n">15</td><td class="slug">subagents</td><td>an agent that can forget</td><td class="hurt">would you trust one?</td></tr>
@@ -524,39 +524,43 @@ npm run build             <span class="c"># the types</span></pre>
 
 <!-- 8 ─ guardrails -->
 <section class="screen">
-  <div class="eyebrow">Lesson 11 · guardrails</div>
-  <h1>The model asks. Your code decides.</h1>
-  <p class="sub">A habit in the prompt is a request. A rule in code holds whatever the model says.</p>
+  <div class="eyebrow">Lesson 12 · guardrails</div>
+  <h1>The model asks. Your code checks. You decide.</h1>
+  <p class="sub">A habit in the prompt is a request. A rule in code holds whatever the model says, and the risky calls wait for you.</p>
 
   <div class="cols">
     <div>
       <div class="card">
-        <h3>What your agent already refuses</h3>
-        <ul>
-          <li><b>Files outside the project</b> (lessons 4 and 8)</li>
-          <li><b>More than 25 rounds</b> of tool calls, then it must answer (7)</li>
-          <li><b>Commands over 30 seconds</b>, and more than 8000 characters of output (9)</li>
-          <li><b><code>rm</code>, <code>git push</code> and <code>.env</code></b>, and <code>bash</code> never gets your key (11)</li>
-        </ul>
-      </div>
-      <div class="card hero">
-        <h3>Patterns catch accidents, not intent</h3>
-        <p>We blocked <code>rm</code> and asked it to clean up. It emptied both files with <code>edit_file</code>. Told to find a way, it used <code>mv</code>.</p>
-        <p><b style="color:var(--accent)">The real boundary is a sandbox</b> that limits what the process can touch at all.</p>
+        <h3>Four rules, each <code>allow</code>, <code>ask</code> or <code>deny</code></h3>
+        <pre>const RULES = [
+  { name: "delete", pattern: /\brm\b/ },
+  { name: "force-push", pattern: /\bgit push\b.*(--force|-f\b)/ },
+  { name: "secrets", pattern: /\.env\b/ },
+  { name: "settings", pattern: /settings\.json/ },
+];</pre>
+        <pre><span class="c">// settings.json, in the agent's home, never the workspace</span>
+{ "delete": "allow", "force-push": "deny" }   <span class="c">// the rest: ask</span></pre>
+        <pre><span class="you">You:</span> What is in .env?
+Tool: read_file(.env)
+? Allow read_file(.env)? (secrets) (y/N) <span class="you">n</span>
+<span class="c">→ Blocked: secrets was not allowed.</span></pre>
       </div>
     </div>
 
     <div>
       <div class="card">
-        <h3>One check, before anything runs</h3>
-        <pre>const BLOCKED = [
-  { pattern: /\brm\b/, reason: "deleting files is not allowed." },
-  { pattern: /\bgit push\b/, reason: "pushing is not allowed." },
-  { pattern: /\.env\b/, reason: ".env holds secrets." },
-];</pre>
-        <pre><span class="you">You:</span> Push this branch to origin.
-Tool: bash(git status &amp;&amp; git push origin HEAD)
-<span class="c">→ Blocked: pushing is not allowed.</span></pre>
+        <h3>What else your agent already refuses</h3>
+        <ul>
+          <li><b>Files outside the folder you started it in</b> (lessons 4 and 8)</li>
+          <li><b>More than 25 rounds</b> of tool calls, then it must answer (7)</li>
+          <li><b>Commands over 30 seconds</b>, and more than 8000 characters of output (9)</li>
+          <li><b>Your key in <code>bash</code></b>, whatever the settings say (12)</li>
+        </ul>
+      </div>
+      <div class="card hero">
+        <h3>Patterns catch accidents, not intent</h3>
+        <p>“Tidy this folder” became one five-line <code>find … -exec rm -rf</code>. Would you read it all before pressing <code>y</code>? And <code>find -delete</code> or <code>mv</code> would not have asked at all.</p>
+        <p><b style="color:var(--accent)">The real boundary is a sandbox</b> that limits what the process can touch at all.</p>
       </div>
       <div class="card">
         <h3>Whose instructions are these?</h3>
