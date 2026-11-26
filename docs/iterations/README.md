@@ -6,7 +6,7 @@
 | 002 | [Stateless agent loop](002-stateless-agent-loop.md) | Done |
 | 003 | [Stateful agent loop](003-stateful-agent-loop.md) | Done |
 | 004 | [Basic read file tool](004-basic-read-file-tool.md) | Done |
-| 005 | [Observability](005-observability.md) | Todo |
+| 005 | [Observability](005-observability.md) | Done |
 | 006 | [Multiple tool calls](006-multiple-tool-calls.md) | Todo |
 | 007 | [Tool call loop](007-tool-call-loop.md) | Todo |
 | 008 | [Edit file tool](008-edit-file-tool.md) | Todo |
