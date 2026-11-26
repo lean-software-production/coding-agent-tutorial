@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 import { startFakeModel, type ModelRequest } from "./fake-model.ts";
 import type { Reply } from "./model-script.ts";
 import { aSandbox, type Files, type Folder, type Sandbox } from "./sandbox.ts";
-import { Terminal } from "./terminal.ts";
+import { Terminal, type Answer } from "./terminal.ts";
 
 const preload = pathToFileURL(path.join(import.meta.dirname, "preload.mjs")).href;
 const NOT_INHERITED = /^(OPENROUTER_.*|NODE_OPTIONS|NODE_TEST_CONTEXT|FORCE_COLOR|CI)$/;
@@ -18,6 +18,7 @@ export type Scenario = {
   readonly workspace?: Files;
   readonly userHome?: Files;
   readonly environment?: NodeJS.ProcessEnv;
+  readonly answers?: readonly Answer[];
 };
 
 export type Outcome = {
@@ -26,6 +27,7 @@ export type Outcome = {
   readonly requests: readonly ModelRequest[];
   readonly project: Folder;
   readonly workspace: Folder;
+  readonly questions: number;
 };
 
 // Spawned rather than imported, so a test says nothing about how the agent is built.
@@ -40,12 +42,13 @@ export async function runAgent(t: TestContext, scenario: Scenario): Promise<Outc
   const agent = launch(sandbox, model.url, scenario);
   t.after(() => agent.kill("SIGKILL"));
 
-  const terminal = new Terminal(agent);
+  const terminal = new Terminal(agent, scenario.answers ?? []);
   for (const prompt of scenario.prompts) await terminal.answer(prompt);
   const exitCode = await terminal.leave();
 
   const { project, workspace } = sandbox;
-  return { output: terminal.output, exitCode, requests: model.requests, project, workspace };
+  const { output, questions } = terminal;
+  return { output, exitCode, requests: model.requests, project, workspace, questions };
 }
 
 function launch(sandbox: Sandbox, modelUrl: string, scenario: Scenario): ChildProcessWithoutNullStreams {
