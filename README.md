@@ -191,7 +191,7 @@ add `--agent pi`, `--agent claude`, or `--agent codex`.
 It uses the network and may consume model quota; normal setup does not make a
 model request when a key is already configured.
 
-The tutorial defaults to `openai/gpt-5.6-luna`. To use a different model,
+The tutorial defaults to `openai/gpt-6-luna`. To use a different model,
 change the model line in `.env`, eg:
 
 ```sh
