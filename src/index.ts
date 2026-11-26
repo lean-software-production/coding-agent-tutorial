@@ -7,6 +7,7 @@ import { OpenRouter } from "@openrouter/sdk";
 import type { ChatAssistantMessage, ChatFunctionToolFunction, ChatMessages, ChatToolCall } from "@openrouter/sdk/models";
 import { marked } from "marked";
 import { markedTerminal } from "marked-terminal";
+import { loadSkills } from "./skills.ts";
 
 marked.use(markedTerminal());
 
@@ -60,6 +61,18 @@ const tools: ChatFunctionToolFunction[] = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "skill",
+      description: "Load the instructions of a skill before doing a task it describes.",
+      parameters: {
+        type: "object",
+        properties: { name: { type: "string", description: "Name of the skill" } },
+        required: ["name"],
+      },
+    },
+  },
 ];
 
 const RULES = [
@@ -78,7 +91,10 @@ Never say a job is done unless a command you ran says so.`;
 
 const projectInstructions = await readFile("AGENTS.md", "utf8").catch(() => "");
 
-const messages: ChatMessages[] = [{ role: "system", content: `${SYSTEM_PROMPT}\n\n${projectInstructions}` }];
+const skills = await loadSkills();
+const skillList = [...skills.values()].map(({ name, description }) => `Skill ${name}: ${description}`).join("\n");
+
+const messages: ChatMessages[] = [{ role: "system", content: `${SYSTEM_PROMPT}\n\n${projectInstructions}\n\n${skillList}` }];
 
 while (true) {
   const userMessage = await input({ message: chalk.cyan("You:") }).catch(() => process.exit());
@@ -153,6 +169,8 @@ async function runTool(call: ChatToolCall): Promise<string> {
       return editProjectFile(args.path, args.old_text, args.new_text);
     case "bash":
       return runCommand(args.command);
+    case "skill":
+      return loadSkill(args.name);
     default:
       throw new Error(`there is no tool called ${call.function.name}.`);
   }
@@ -183,6 +201,13 @@ function runCommand(command: string) {
   const ending = status === null ? `Killed after ${MAX_SECONDS} seconds.` : `Exit code: ${status}`;
 
   return `${shown}\n${ending}`;
+}
+
+function loadSkill(name: string) {
+  const skill = skills.get(name);
+  if (!skill) throw new Error(`there is no skill called ${name}.`);
+
+  return skill.text;
 }
 
 function insideProject(relativePath: string) {
